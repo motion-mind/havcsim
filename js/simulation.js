@@ -253,7 +253,8 @@ function tick(){
       sim.spaceTemp = (sim.spaceTemp || 72) + (sim.oat - (sim.spaceTemp || 72)) * 0.003;
     }
     sim.raTemp = sim.spaceTemp;
-    const supplyAirHumid = isNaN(sim.saRH)? 50 : sim.saRH * 100;
+    const supplyW_ra = sim.W_supply || humidityRatio(sim.saTemp || 72, sim.saRH || 0.5);
+    const supplyAirHumid = rhFromW(sim.raTemp || 72, supplyW_ra) * 100;
     const latentLoad = clamp(30 + (sim.oat - 20) * 0.38, 22, 62);
     if(wantRun){
       const flowRatio = sim.supplyCfm / (sp.maxCfmSP || 6000);
@@ -756,7 +757,7 @@ function tickVav(wantRun){
   sim.vav.forEach((box, idx)=>{
     const n = idx+1;
     const vavPowerLost = isVavDisconnected(n, 1) || isVavDisconnected(n, 2) || activeFaults['vavPowerLost'+n];
-    const supplyAirHumid = isNaN(sim.saRH)? 50 : sim.saRH * 100;
+    const supplyW = sim.W_supply || humidityRatio(sim.saTemp || 72, sim.saRH || 0.5);
     const latentLoad = clamp(30 + (sim.oat - 20) * 0.38, 22, 62);
     if(wantRun && !vavPowerLost){
       const flowVal = box.type === 'fcu'? (box.fanSpeed * 4) : box.airflowCfm;
@@ -765,7 +766,8 @@ function tickVav(wantRun){
       if(!config.steamHumid && config.preheat && sim.preheatValve > 5){
         airExchangeFrac = Math.max(airExchangeFrac, 0.12);
       }
-      box.zoneHumid += airExchangeFrac * (supplyAirHumid - box.zoneHumid) + (1 - airExchangeFrac) * (latentLoad - box.zoneHumid) * 0.005;
+      const effectiveSAHumid = rhFromW(box.zoneTemp, supplyW) * 100;
+      box.zoneHumid += airExchangeFrac * (effectiveSAHumid - box.zoneHumid) + (1 - airExchangeFrac) * (latentLoad - box.zoneHumid) * 0.005;
     } else { box.zoneHumid += (latentLoad - box.zoneHumid) * 0.002; }
     box.zoneHumid = clamp(box.zoneHumid, 15, 95);
     box.zoneDisplayHumid = activeFaults['vavZoneHumiditySensorDrift'+n] ? clamp(box.zoneHumid + 20, 15, 95) : box.zoneHumid;
