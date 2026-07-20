@@ -2,6 +2,7 @@
    SIMULATION ENGINE — buildSimState, tick, tickVav, tickExhaustFan
    ============================================================ */
 const DT = 1;
+const DAMPER_SLEW = 100 / 90;
 
 function slew(current, target, maxStepPerSec){
   if(isNaN(target)) return isNaN(current)? 0 : current;
@@ -201,7 +202,6 @@ function tick(){
   const age = sim.age || 0;
   const ageLossPct = getAgeLoss(age);
   const coilEff = 0.85 * (1 - (ageLossPct / 100) * 0.35);
-  const DAMPER_SLEW = 100 / 90;
   let drift = 0;
   if(age >= 10){ drift = Math.sin(window.simTickCount * 0.05) * 4; }
 
