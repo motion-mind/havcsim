@@ -265,7 +265,7 @@ function buildSchematicCore(){
   let deepestY = coldY;
   if(hotY!==null) deepestY = Math.max(deepestY, hotY);
   if(ry!==null) deepestY = Math.max(deepestY, ry);
-  const viewW = Math.max(x, hx);
+  const viewW = Math.max(x, hx) + 70;
   const canvasH = deepestY + 180;
   svg.setAttribute('viewBox','0 0 '+viewW+' '+canvasH);
 
