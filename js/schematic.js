@@ -304,7 +304,7 @@ function buildSchematicCore(){
     s += horizDuctSVG(splitX, coldLaneY-ductH/2, ductEnd-splitX, ductH, null, null, true, false);
     s += arrowFlowLine(ductStart, coldY, forkX - 36, coldY, 'fwd', 'flow_preForkSupply', 'flow-fwd');
     s += arrowFlowLineAngled(forkX, coldY - ductH/4, splitX, coldLaneY, 'flow_coldSplitter', 'flow-fwd');
-    s += arrowFlowLineAngled(forkX, coldY + ductH/4, splitX, hotY, 'flow_hotSplitter', 'flow-fwd');
+    s += arrowFlowLineAngled(forkX, coldY + ductH/4, splitX + 20, hotY, 'flow_hotSplitter', 'flow-fwd');
     s += arrowFlowLine(splitX, coldLaneY, ductEnd, coldLaneY, 'fwd', 'flow_coldSupply', 'flow-fwd');
     s += '<text x="'+ductStart+'" y="'+(coldY-ductH/2-10)+'" font-family="Arial" font-size="10" font-weight="700" fill="'+BAS.textDim+'">SUPPLY SPLITS TO COLD / HOT DECK</text>';
     preforkItems.forEach(it=>{ s += drawStation(it, coldY, ductH); });
