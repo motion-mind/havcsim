@@ -706,9 +706,10 @@ function tick(){
 
   const wantRunReturn = wantRunCold || wantRunHot;
   if(config.airSystem!=='oa100'){
+    const totalSupplyForReturn = config.ductType==='dual' ? sim.supplyCfm + (sim.hotDeckCfm || 0) : sim.supplyCfm;
     let target;
     if(sim.economizerActive){
-      target = sim.supplyCfm;
+      target = totalSupplyForReturn;
     } else {
       target = sp.oaCfmSP;
     }
@@ -716,14 +717,14 @@ function tick(){
     if(config.driveType==='vfd'){
       let outPct;
       if(!rfStartCmd){ sim.pid.returnFlow.reset(); outPct = 0; }
-      else { outPct = sim.pid.returnFlow.update(target, (sim.supplyCfm - sim.returnCfm), DT, false); }
+      else { outPct = sim.pid.returnFlow.update(target, (totalSupplyForReturn - sim.returnCfm), DT, false); }
       targetReturnPct = rfStartCmd ? (sim.overrideReturnFanSpeed ? sim.overrideReturnFanSpeedVal : clamp(Math.max(outPct,25),25,100)) : 0;
     } else { targetReturnPct = rfStartCmd ? (sim.overrideReturnFanSpeed ? sim.overrideReturnFanSpeedVal : 100) : 0; }
     if(isWireDisconnected('Return Fan Drive Speed Command')) targetReturnPct = 0;
     const returnFanSlew = config.driveType==='vfd' ? 100 / 90 : 20;
     sim.returnFanPct = slew(sim.returnFanPct, targetReturnPct, returnFanSlew);
     sim.returnFans.forEach(f=>{ f.run = rfStartCmd && !f.fail; });
-    sim.returnCfm = rfStartCmd ? (0.75 * designCfm) * (sim.returnFanPct/100) * capFracReturn * (0.97+0.06*Math.random()) * flowDegradation : 0;
+    sim.returnCfm = rfStartCmd ? (0.75 * sp.maxCfmSP) * (sim.returnFanPct/100) * capFracReturn * (0.97+0.06*Math.random()) * flowDegradation : 0;
   } else { sim.returnCfm = NaN; }
 
   // Freezestat recovery: after reset, prevent re-trip until PHC-LAT rises back above
