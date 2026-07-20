@@ -785,12 +785,12 @@ function tickVav(wantRun){
     if(box.type === 'fcu'){
       let fanTargetSpeed = 10, coolTargetValve = 0, heatTargetValve = 0;
       if(!vavPowerLost){
-        if(tempError > 0.3){
-          fanTargetSpeed = clamp(50 + tempError*20, 50, 100);
-          coolTargetValve = clamp(tempError*40, 0, 100);
-        } else if(tempError < -0.3){
-          fanTargetSpeed = clamp(50 - tempError*20, 50, 100);
-          heatTargetValve = clamp(-tempError*40, 0, 100);
+        if(tempError > 0){
+          fanTargetSpeed = clamp(10 + tempError * 80, 10, 100);
+          coolTargetValve = clamp(tempError * 80, 0, 100);
+        } else if(tempError < 0){
+          fanTargetSpeed = clamp(10 - tempError * 80, 10, 100);
+          heatTargetValve = clamp(-tempError * 80, 0, 100);
         }
         if(activeFaults['fcuFanFail'+n]) fanTargetSpeed = 0;
         if(activeFaults['fcuCoolValveStuck'+n] !== undefined) coolTargetValve = activeFaults['fcuCoolValveStuck'+n];
