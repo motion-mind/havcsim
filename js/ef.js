@@ -39,20 +39,10 @@ function renderExhaustFanTab(){
   const angleA = 90 - (ef.fanA.damperPos / 100) * 90;
   const angleB = 90 - (ef.fanB.damperPos / 100) * 90;
 
-  function fanSvgHtml(running){ return running ?
-    '<g class="graphivac-object"><g class="active"><g class="fan"><g class="rotating-middle">'+
-    '<line x1="-12" y1="0" x2="12" y2="0" stroke="var(--text)" stroke-width="1.8"/>'+
-    '<line x1="0" y1="-12" x2="0" y2="12" stroke="var(--text)" stroke-width="1.8"/>'+
-    '<line x1="-8.5" y1="-8.5" x2="8.5" y2="8.5" stroke="var(--text)" stroke-width="1.8"/>'+
-    '<line x1="-8.5" y1="8.5" x2="8.5" y2="-8.5" stroke="var(--text)" stroke-width="1.8"/>'+
-    '</g></g></g></g>' :
-    '<line x1="-12" y1="0" x2="12" y2="0" stroke="var(--text-faint)" stroke-width="1.5"/>'+
-    '<line x1="0" y1="-12" x2="0" y2="12" stroke="var(--text-faint)" stroke-width="1.5"/>'+
-    '<line x1="-8.5" y1="-8.5" x2="8.5" y2="8.5" stroke="var(--text-faint)" stroke-width="1.5"/>'+
-    '<line x1="-8.5" y1="8.5" x2="8.5" y2="-8.5" stroke="var(--text-faint)" stroke-width="1.5"/>'; }
+  function fanStatus(fan){ return fan.fail ? 'in-alarm' : (fan.run ? 'active' : ''); }
 
-  const fanASpinsHtml = fanSvgHtml(ef.fanA.run);
-  const fanBSpinsHtml = fanSvgHtml(ef.fanB.run);
+  const fanAGfx = gfxWrap('fan', fanStatus(ef.fanA), 0.85);
+  const fanBGfx = gfxWrap('fan', fanStatus(ef.fanB), 0.85);
 
   const svg = `<svg viewBox="0 0 360 220" width="100%">
     <defs>
@@ -77,8 +67,7 @@ function renderExhaustFanTab(){
       <line x1="0" y1="5" x2="13" y2="${ef.fanA.endSwitch ? 5 : -2}" stroke="${ef.fanA.endSwitch ? activeColor : 'var(--text)'}" stroke-width="1.5"/>
       <text x="-5" y="-3" font-family="Arial" font-size="6.5" fill="var(--text-faint)">SW A</text>
     </g>
-    <circle cx="215" cy="60" r="14" fill="var(--panel-inset)" stroke="var(--line)" stroke-width="1.3"/>
-    <g transform="translate(215, 60)">${fanASpinsHtml}</g>
+    <g transform="translate(215, 60)">${fanAGfx}</g>
     <text x="206" y="82" font-family="Arial" font-size="7.5" fill="var(--text-faint)" font-weight="bold">EF-A</text>
     ${ef.fanA.fail ? '<circle cx="215" cy="60" r="16" fill="none" stroke="var(--red)" stroke-width="2" stroke-dasharray="3 3"/>' : ''}
     <text x="110" y="196" font-family="Arial" font-size="8" fill="var(--text-dim)" font-weight="bold">FAN B PATH</text>
@@ -93,8 +82,7 @@ function renderExhaustFanTab(){
       <line x1="0" y1="5" x2="13" y2="${ef.fanB.endSwitch ? 5 : -2}" stroke="${ef.fanB.endSwitch ? activeColor : 'var(--text)'}" stroke-width="1.5"/>
       <text x="-5" y="-3" font-family="Arial" font-size="6.5" fill="var(--text-faint)">SW B</text>
     </g>
-    <circle cx="215" cy="160" r="14" fill="var(--panel-inset)" stroke="var(--line)" stroke-width="1.3"/>
-    <g transform="translate(215, 160)">${fanBSpinsHtml}</g>
+    <g transform="translate(215, 160)">${fanBGfx}</g>
     <text x="206" y="182" font-family="Arial" font-size="7.5" fill="var(--text-faint)" font-weight="bold">EF-B</text>
     ${ef.fanB.fail ? '<circle cx="215" cy="160" r="16" fill="none" stroke="var(--red)" stroke-width="2" stroke-dasharray="3 3"/>' : ''}
     <path d="M 240,60 L 270,60 L 290,40 L 320,40" fill="none" stroke="var(--line)" stroke-width="1.3"/>

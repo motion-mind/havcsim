@@ -47,7 +47,8 @@ function renderTempReadings(){
   }
   if(config.airSystem==='return') html += readingCard('Return Air Humidity', fmt(sim.raRH*100,0), '% RH', false);
   if(config.includeOa) html += readingCard('Outside Air Humidity', fmt(sim.oaRH*100,0), '% RH', false);
-  html += readingCard('Supply Air Humidity', fmt(sim.saRH*100,0), '% RH', false);
+  const effSaRH = sim.W_supply ? rhFromW(sim.raTemp || 72, sim.W_supply) * 100 : sim.saRH * 100;
+  html += readingCard('Supply Air Humidity', fmt(effSaRH,0), '% RH', false);
   el.innerHTML = html;
 }
 
