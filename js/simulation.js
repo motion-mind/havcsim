@@ -869,7 +869,7 @@ function tickVav(wantRun){
           coolTarget = clamp(VAV_MIN_PCT + tempError*16, VAV_MIN_PCT, 100);
           reheatTarget = 0;
         } else if(tempError < -0.3){
-          coolTarget = clamp(VAV_MIN_PCT + (-tempError)*15, VAV_MIN_PCT, 50);
+          coolTarget = clamp(VAV_MIN_PCT + (-tempError)*15, VAV_MIN_PCT, 100);
           reheatTarget = clamp(-tempError*40, 0, 100);
         } else { coolTarget = VAV_MIN_PCT; reheatTarget = 0; }
         let damperTarget = damperStuck!==undefined? damperStuck : (wantRun? coolTarget : 0);
@@ -902,7 +902,7 @@ function tickVav(wantRun){
           box.electricStage = 0;
         }
         const reheatPct = config.vavReheatType==='electric'? box.electricStage : box.reheatValve;
-        const reheatRise = (reheatPct/100) * 35;
+        const reheatRise = (reheatPct/100) * 50;
         const dischargeTemp2 = primaryTemp + reheatRise;
         box.dischargeTemp = dischargeTemp2;
         if(sim.dehumidActive){ box.dischargeTemp = Math.min(box.dischargeTemp, box.zoneSP + 5); }

@@ -137,7 +137,7 @@ body.theme-light .enable-card.on .enable-status{color:#1f8a4c;text-shadow:none;}
 .vav-box .vrow{display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:3px 0;border-bottom:1px dashed var(--line-soft);}
 .vav-box .vrow:last-child{border-bottom:none;}
 .vav-box .vrow .vval{font-family:var(--mono);color:var(--text);}
-.vav-box .vrow input[type=number]{width:56px;font-family:var(--mono);}
+.vav-box .vrow input[type=number]{width:72px;font-family:var(--mono);}
 
 label.field{display:flex;flex-direction:column;gap:6px;font-size:12px;color:var(--text-dim);}
 select,input[type=number],input[type=text]{
