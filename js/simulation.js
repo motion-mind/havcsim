@@ -803,8 +803,7 @@ function tickVav(wantRun){
       box.heatingValve = wantRun? slew(box.heatingValve || 0, heatTargetValve, 8) : 0;
       const clgDrop = (box.coolingValve/100) * 20;
       const htgRise = (box.heatingValve/100) * 35;
-      const ventFrac = 0.15;
-      const enteringAirTemp = (wantRun && !vavPowerLost) ? ((1 - ventFrac) * box.zoneTemp + ventFrac * primaryTemp) : box.zoneTemp;
+      const enteringAirTemp = (wantRun && !vavPowerLost) ? primaryTemp : box.zoneTemp;
       box.dischargeTemp = enteringAirTemp - clgDrop + htgRise;
       if(sim.dehumidActive){ box.dischargeTemp = Math.min(box.dischargeTemp, box.zoneSP + 5); }
       box.airflowCfm = wantRun? (box.fanSpeed/100)*(box.designCfm || 400) : 0;
