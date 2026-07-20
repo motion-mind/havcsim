@@ -301,7 +301,7 @@ function buildSchematicCore(){
     // Lower fork outer edges only
     s += `<path d="M ${forkX} ${coldY} L ${splitX} ${hotY-ductH/2} M ${forkX} ${coldY+ductH/2} L ${splitX} ${hotY+ductH/2}" fill="none" stroke="${BAS.line}" stroke-width="2" stroke-linecap="square"/>`;
     // Cold lane — left edge open (fork polygon arrives there)
-    s += horizDuctSVG(splitX, coldLaneY-ductH/2, ductEnd-splitX, ductH, null, null, true, false);
+    s += horizDuctSVG(splitX, coldLaneY-ductH/2, ductEnd-splitX, ductH, null, null, true, true);
     s += arrowFlowLine(ductStart, coldY, forkX - 36, coldY, 'fwd', 'flow_preForkSupply', 'flow-fwd');
     s += arrowFlowLineAngled(forkX, coldY - ductH/4, splitX, coldLaneY, 'flow_coldSplitter', 'flow-fwd');
     s += arrowFlowLine(splitX, coldLaneY, ductEnd, coldLaneY, 'fwd', 'flow_coldSupply', 'flow-fwd');
@@ -311,7 +311,7 @@ function buildSchematicCore(){
     // Static pressure sensor on a short stub after the main duct (represents 2/3 down unknown duct length)
     const cStubStart = ductEnd + 12;
     const cStubW = 40;
-    s += horizDuctSVG(cStubStart, coldLaneY-ductH/2, cStubW, ductH, null, null, false, true);
+    s += horizDuctSVG(cStubStart, coldLaneY-ductH/2, cStubW, ductH, null, null, true, true);
     s += '<line x1="'+(ductEnd+2)+'" y1="'+(coldLaneY-ductH/2+4)+'" x2="'+(ductEnd+8)+'" y2="'+(coldLaneY+ductH/2-4)+'" stroke="'+BAS.line+'" stroke-width="1.2"/>';
     s += '<line x1="'+(ductEnd+6)+'" y1="'+(coldLaneY-ductH/2+4)+'" x2="'+(ductEnd+12)+'" y2="'+(coldLaneY+ductH/2-4)+'" stroke="'+BAS.line+'" stroke-width="1.2"/>';
     const cStubCx = cStubStart + cStubW/2;
@@ -325,13 +325,13 @@ function buildSchematicCore(){
   } else {
     // For non-sharedDual: if there's a return riser, leave a gap in the supply duct bottom.
     const supBotHoles = (hasReturn && _riserX !== null) ? [{from: _riserX-riserW/2, to: _riserX+riserW/2}] : null;
-    s += horizDuctSVG(ductStart, coldY-ductH/2, ductEnd-ductStart, ductH, supBotHoles, null);
+    s += horizDuctSVG(ductStart, coldY-ductH/2, ductEnd-ductStart, ductH, supBotHoles, null, false, true);
     s += arrowFlowLine(ductStart, coldY, ductEnd, coldY, 'fwd', 'flow_coldSupply', 'flow-fwd');
     if(independent){ s += '<text x="'+ductStart+'" y="'+(coldY-ductH/2-10)+'" font-family="Arial" font-size="10" font-weight="700" fill="'+BAS.textDim+'">COLD DECK AIR PATH</text>'; }
     // Static pressure sensor on a short stub after the main duct
     const stubStart = ductEnd + 12;
     const stubW = 40;
-    s += horizDuctSVG(stubStart, coldY-ductH/2, stubW, ductH, null, null, false, true);
+    s += horizDuctSVG(stubStart, coldY-ductH/2, stubW, ductH, null, null, true, true);
     s += '<line x1="'+(ductEnd+2)+'" y1="'+(coldY-ductH/2+4)+'" x2="'+(ductEnd+8)+'" y2="'+(coldY+ductH/2-4)+'" stroke="'+BAS.line+'" stroke-width="1.2"/>';
     s += '<line x1="'+(ductEnd+6)+'" y1="'+(coldY-ductH/2+4)+'" x2="'+(ductEnd+12)+'" y2="'+(coldY+ductH/2-4)+'" stroke="'+BAS.line+'" stroke-width="1.2"/>';
     const stubCx = stubStart + stubW/2;
@@ -350,21 +350,21 @@ function buildSchematicCore(){
     const hDuctEnd = hotItems[hotItems.length-1].x + hotItems[hotItems.length-1].w + 22;
     if(sharedDual){
       // Hot lane — left edge open (fork polygon arrives there)
-      s += horizDuctSVG(hDuctStart, hotY-ductH/2, hDuctEnd-hDuctStart, ductH, null, null, true, false);
+      s += horizDuctSVG(hDuctStart, hotY-ductH/2, hDuctEnd-hDuctStart, ductH, null, null, true, true);
       s += arrowFlowLineAngled(forkX, coldY + ductH/4, hDuctStart, hotY, 'flow_hotSplitter', 'flow-fwd');
     } else if(independent && hasReturn && _hRiserX !== null){
       // Independent hot deck — gap in top where hot riser connects
       const hotTopHoles = [{from: _hRiserX-riserW/2, to: _hRiserX+riserW/2}];
-      s += horizDuctSVG(hDuctStart, hotY-ductH/2, hDuctEnd-hDuctStart, ductH, null, hotTopHoles);
+      s += horizDuctSVG(hDuctStart, hotY-ductH/2, hDuctEnd-hDuctStart, ductH, null, hotTopHoles, false, true);
     } else {
-      s += horizDuctSVG(hDuctStart, hotY-ductH/2, hDuctEnd-hDuctStart, ductH, null, null);
+      s += horizDuctSVG(hDuctStart, hotY-ductH/2, hDuctEnd-hDuctStart, ductH, null, null, false, true);
     }
     s += arrowFlowLine(hDuctStart, hotY, hDuctEnd, hotY, 'fwd', 'flow_hotSupply', 'flow-fwd');
     if(independent){ s += '<text x="'+hDuctStart+'" y="'+(hotY-ductH/2-10)+'" font-family="Arial" font-size="10" font-weight="700" fill="'+BAS.textDim+'">HOT DECK AIR PATH</text>'; }
     // Static pressure sensor on a short stub after the main hot deck duct
     const hStubStart = hDuctEnd + 12;
     const hStubW = 40;
-    s += horizDuctSVG(hStubStart, hotY-ductH/2, hStubW, ductH, null, null, false, true);
+    s += horizDuctSVG(hStubStart, hotY-ductH/2, hStubW, ductH, null, null, true, true);
     s += '<line x1="'+(hDuctEnd+2)+'" y1="'+(hotY-ductH/2+4)+'" x2="'+(hDuctEnd+8)+'" y2="'+(hotY+ductH/2-4)+'" stroke="'+BAS.line+'" stroke-width="1.2"/>';
     s += '<line x1="'+(hDuctEnd+6)+'" y1="'+(hotY-ductH/2+4)+'" x2="'+(hDuctEnd+12)+'" y2="'+(hotY+ductH/2-4)+'" stroke="'+BAS.line+'" stroke-width="1.2"/>';
     const hStubCx = hStubStart + hStubW/2;
