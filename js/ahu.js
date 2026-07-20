@@ -316,6 +316,8 @@ function renderAhuFrame(){
     const returnEl = svgEl.querySelector('#flow_returnMain'); if(returnEl) returnEl.classList.toggle('flow-running', rfRun);
     const eaDamperOpen = config.includeEa && (sim.eaDamperPos >= 5);
     const returnExhaustEl = svgEl.querySelector('#flow_returnExhaust'); if(returnExhaustEl) returnExhaustEl.classList.toggle('flow-running', rfRun && eaDamperOpen);
+    const coldStubEl = svgEl.querySelector('#flow_coldSupplyStub'); if(coldStubEl) coldStubEl.classList.toggle('flow-running', sfRun && (config.ductType==='dual' ? coldDamperOpen : supplyDamperOpen));
+    const hotStubEl = svgEl.querySelector('#flow_hotSupplyStub'); if(hotStubEl) hotStubEl.classList.toggle('flow-running', hdRun && hotDamperOpen);
   }
   requestAnimationFrame(loopThrottle);
 }
