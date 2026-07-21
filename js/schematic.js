@@ -345,9 +345,9 @@ function buildSchematicCore(){
     } else if(independent && hasReturn && _hRiserX !== null){
       // Independent hot deck — gap in top where hot riser connects
       const hotTopHoles = [{from: _hRiserX-riserW/2, to: _hRiserX+riserW/2}];
-      s += horizDuctSVG(hDuctStart, hotY-ductH/2, hDuctEnd-hDuctStart, ductH, null, hotTopHoles, false, true);
+      s += horizDuctSVG(hDuctStart, hotY-ductH/2, hDuctEnd-hDuctStart, ductH, null, hotTopHoles, true, true);
     } else {
-      s += horizDuctSVG(hDuctStart, hotY-ductH/2, hDuctEnd-hDuctStart, ductH, null, null, false, true);
+      s += horizDuctSVG(hDuctStart, hotY-ductH/2, hDuctEnd-hDuctStart, ductH, null, null, true, true);
     }
     s += arrowFlowLine(hDuctStart, hotY, hDuctEnd, hotY, 'fwd', 'flow_hotSupply', 'flow-fwd');
     if(independent){ s += '<text x="'+hDuctStart+'" y="'+(hotY-ductH/2-10)+'" font-family="Arial" font-size="10" font-weight="700" fill="'+BAS.textDim+'">HOT DECK AIR PATH</text>'; }
