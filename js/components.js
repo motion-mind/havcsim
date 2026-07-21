@@ -95,9 +95,9 @@ const GFX = {
    0% { fill: red; }
    50% { fill: #659dc5;}
    100% { fill: red; }}
-   .graphivac-object .active .fan-s .rotating-middle-s {
-   animation:fan-spin 3s linear infinite;
-   }
+    .graphivac-object .active .fan-s .rotating-middle-s {
+    animation:fan-spin-rev 3s linear infinite;
+    }
    .graphivac-object .active:not(.in-alarm) .fan-s .fan-background-s {
    fill: #66c492;
    }`, markup: `<g fill="#659dc5">
