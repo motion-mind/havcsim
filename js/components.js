@@ -91,12 +91,13 @@ const GFX = {
    0% { fill: red; }
    50% { fill: #659dc5;}
    100% { fill: red; }}
-    .graphivac-object .active .fan-s .rotating-middle-s {
-    animation:fan-spin 3s linear infinite;
-    }
+   .graphivac-object .active .fan-s .rotating-middle-s {
+   animation:fan-supply-spin 3s linear infinite;
+   }
    .graphivac-object .active:not(.in-alarm) .fan-s .fan-background-s {
    fill: #66c492;
-   }`, markup: `<g fill="#659dc5">
+   }
+   @keyframes fan-supply-spin { 100% {transform:rotate(360deg);} }`, markup: `<g fill="#659dc5">
     <g class="fan-s">
       <g id="g8s">
    <path class="fan-background-s" d="m12.297 5.154c-6.117 0-11.066 4.9492-11.066 11.066 0 6.117 4.9492 11.066 11.066 11.066 5.7137 0 10.408-4.3091 11.003-9.8647h7.525v-12.268h-18.148c-0.12601-0.0043-0.25236 0-0.37941 0z" fill-rule="evenodd" stroke="#000" stroke-width="1px" fill="inherit"></path>
@@ -119,11 +120,12 @@ const GFX = {
   </g>` },
   fanReturn: { css: `.graphivac-object .in-alarm .fan-r {animation:fan-alarm 1s infinite;}
    .graphivac-object .active .fan-r .rotating-middle-r {
-   animation:fan-spin-rev 3s linear infinite;
+   animation:fan-return-spin 3s linear infinite;
    }
    .graphivac-object .active:not(.in-alarm) .fan-r .fan-background-r {
    fill: #66c492;
-   }`, markup: `<g fill="#659dc5">
+   }
+   @keyframes fan-return-spin { 100% {transform:rotate(-360deg);} }`, markup: `<g fill="#659dc5">
     <g class="fan-r">
       <g id="g8r">
    <path class="fan-background-r" d="m12.297 5.154c-6.117 0-11.066 4.9492-11.066 11.066 0 6.117 4.9492 11.066 11.066 11.066 5.7137 0 10.408-4.3091 11.003-9.8647h7.525v-12.268h-18.148c-0.12601-0.0043-0.25236 0-0.37941 0z" fill-rule="evenodd" stroke="#000" stroke-width="1px" fill="inherit"></path>
