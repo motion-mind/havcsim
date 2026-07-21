@@ -316,9 +316,6 @@ function buildSchematicCore(){
     s += '<line x1="'+(ductEnd+2)+'" y1="'+(coldLaneY-ductH/2+4)+'" x2="'+(ductEnd+8)+'" y2="'+(coldLaneY+ductH/2-4)+'" stroke="'+BAS.line+'" stroke-width="1.2"/>';
     s += '<line x1="'+(ductEnd+6)+'" y1="'+(coldLaneY-ductH/2+4)+'" x2="'+(ductEnd+12)+'" y2="'+(coldLaneY+ductH/2-4)+'" stroke="'+BAS.line+'" stroke-width="1.2"/>';
     const cStubCx = cStubStart + cStubW/2;
-    s += '<line x1="'+cStubCx+'" y1="'+(coldLaneY-ductH/2)+'" x2="'+cStubCx+'" y2="'+(coldLaneY-ductH/2-20)+'" stroke="'+BAS.line+'" stroke-width="1.2"/>';
-    s += '<line x1="'+(cStubCx-3)+'" y1="'+(coldLaneY-ductH/2-2)+'" x2="'+(cStubCx+3)+'" y2="'+(coldLaneY-ductH/2-2)+'" stroke="'+BAS.line+'" stroke-width="1.2"/>';
-    s += '<line x1="'+(cStubCx-3)+'" y1="'+(coldLaneY-ductH/2-4)+'" x2="'+(cStubCx+3)+'" y2="'+(coldLaneY-ductH/2-4)+'" stroke="'+BAS.line+'" stroke-width="1.2"/>';
     s += '<g id="readout_spStubCold"></g>';
     window._schemSpStubColdCx = cStubCx;
     window._schemSpStubColdY = coldLaneY;
@@ -336,9 +333,6 @@ function buildSchematicCore(){
     s += '<line x1="'+(ductEnd+2)+'" y1="'+(coldY-ductH/2+4)+'" x2="'+(ductEnd+8)+'" y2="'+(coldY+ductH/2-4)+'" stroke="'+BAS.line+'" stroke-width="1.2"/>';
     s += '<line x1="'+(ductEnd+6)+'" y1="'+(coldY-ductH/2+4)+'" x2="'+(ductEnd+12)+'" y2="'+(coldY+ductH/2-4)+'" stroke="'+BAS.line+'" stroke-width="1.2"/>';
     const stubCx = stubStart + stubW/2;
-    s += '<line x1="'+stubCx+'" y1="'+(coldY-ductH/2)+'" x2="'+stubCx+'" y2="'+(coldY-ductH/2-20)+'" stroke="'+BAS.line+'" stroke-width="1.2"/>';
-    s += '<line x1="'+(stubCx-3)+'" y1="'+(coldY-ductH/2-2)+'" x2="'+(stubCx+3)+'" y2="'+(coldY-ductH/2-2)+'" stroke="'+BAS.line+'" stroke-width="1.2"/>';
-    s += '<line x1="'+(stubCx-3)+'" y1="'+(coldY-ductH/2-4)+'" x2="'+(stubCx+3)+'" y2="'+(coldY-ductH/2-4)+'" stroke="'+BAS.line+'" stroke-width="1.2"/>';
     s += '<g id="readout_spStubMain"></g>';
     window._schemSpStubMainCx = stubCx;
     window._schemSpStubMainY = coldY;
@@ -370,9 +364,6 @@ function buildSchematicCore(){
     s += '<line x1="'+(hDuctEnd+2)+'" y1="'+(hotY-ductH/2+4)+'" x2="'+(hDuctEnd+8)+'" y2="'+(hotY+ductH/2-4)+'" stroke="'+BAS.line+'" stroke-width="1.2"/>';
     s += '<line x1="'+(hDuctEnd+6)+'" y1="'+(hotY-ductH/2+4)+'" x2="'+(hDuctEnd+12)+'" y2="'+(hotY+ductH/2-4)+'" stroke="'+BAS.line+'" stroke-width="1.2"/>';
     const hStubCx = hStubStart + hStubW/2;
-    s += '<line x1="'+hStubCx+'" y1="'+(hotY-ductH/2)+'" x2="'+hStubCx+'" y2="'+(hotY-ductH/2-20)+'" stroke="'+BAS.line+'" stroke-width="1.2"/>';
-    s += '<line x1="'+(hStubCx-3)+'" y1="'+(hotY-ductH/2-2)+'" x2="'+(hStubCx+3)+'" y2="'+(hotY-ductH/2-2)+'" stroke="'+BAS.line+'" stroke-width="1.2"/>';
-    s += '<line x1="'+(hStubCx-3)+'" y1="'+(hotY-ductH/2-4)+'" x2="'+(hStubCx+3)+'" y2="'+(hotY-ductH/2-4)+'" stroke="'+BAS.line+'" stroke-width="1.2"/>';
     s += '<g id="readout_spStubHot"></g>';
     window._schemSpStubHotCx = hStubCx;
     window._schemSpStubHotY = hotY;
@@ -669,17 +660,17 @@ function updateSchematicReadouts(){
   const spStubMainEl = document.getElementById('readout_spStubMain');
   if(spStubMainEl && window._schemSpStubMainCx !== undefined){
     spStubMainEl.innerHTML = bubble(window._schemSpStubMainCx, window._schemSpStubMainY-30, 45, 'SP (2/3 Duct)', 
-      [spStub+'" w.c.'], null, 70);
+      [spStub+'" w.c.'], null, 0);
   }
   const spStubColdEl = document.getElementById('readout_spStubCold');
   if(spStubColdEl && window._schemSpStubColdCx !== undefined){
     spStubColdEl.innerHTML = bubble(window._schemSpStubColdCx, window._schemSpStubColdY-30, 45, 'SP (2/3 Duct)', 
-      [spStub+'" w.c.'], null, 70);
+      [spStub+'" w.c.'], null, 0);
   }
   const spStubHotEl = document.getElementById('readout_spStubHot');
   if(spStubHotEl && window._schemSpStubHotCx !== undefined){
     spStubHotEl.innerHTML = bubble(window._schemSpStubHotCx, window._schemSpStubHotY-30, 45, 'SP (2/3 Duct)', 
-      [spStub+'" w.c.'], null, 70);
+      [spStub+'" w.c.'], null, 0);
   }
 
   // High static trip indicators
