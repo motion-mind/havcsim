@@ -58,9 +58,10 @@ const GFX = {
    0% { fill: red; }
    50% { fill: #659dc5;}
    100% { fill: red; }}
-   .graphivac-object .active .fan .rotating-middle {
-   animation:fan-spin 3s linear infinite;
-   }
+    .graphivac-object .active .fan .rotating-middle {
+    animation:fan-spin 3s linear infinite;
+    transform-box:fill-box; transform-origin:center;
+    }
    .graphivac-object .active:not(.in-alarm) .fan .fan-background {
    fill: #66c492;
    }
@@ -91,9 +92,10 @@ const GFX = {
    0% { fill: red; }
    50% { fill: #659dc5;}
    100% { fill: red; }}
-   .graphivac-object .active .fan-s .rotating-middle-s {
-   animation:fan-supply-spin 3s linear infinite;
-   }
+    .graphivac-object .active .fan-s .rotating-middle-s {
+    animation:fan-supply-spin 3s linear infinite;
+    transform-box:fill-box; transform-origin:center;
+    }
    .graphivac-object .active:not(.in-alarm) .fan-s .fan-background-s {
    fill: #66c492;
    }
@@ -119,8 +121,9 @@ const GFX = {
     </g>
   </g>` },
   fanReturn: { css: `.graphivac-object .in-alarm .fan-r {animation:fan-alarm 1s infinite;}
-   .graphivac-object .active .fan-r .rotating-middle-r {
+    .graphivac-object .active .fan-r .rotating-middle-r {
    animation:fan-return-spin 3s linear infinite;
+   transform-box:fill-box; transform-origin:center;
    }
    .graphivac-object .active:not(.in-alarm) .fan-r .fan-background-r {
    fill: #66c492;
