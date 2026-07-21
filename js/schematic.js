@@ -269,7 +269,7 @@ function buildSchematicCore(){
   svg.setAttribute('viewBox','0 0 '+viewW+' '+canvasH);
 
   const usedSymbols = ['damper','fan','fanSupply','fanReturn','coolingCoil','heatingCoil','humidifier','lowLimit','globeValve','vfd','pump'];
-  let s = '<defs><style>'+collectGfxCss(usedSymbols)+'</style></defs>';
+  let s = '<defs><style>'+collectGfxCss(usedSymbols)+' .safetext { font-family:Arial;font-size:8px;font-weight:700;text-anchor:middle; } .safetext.tripped { fill:#fff; } @keyframes safetyFlash { 0%,100% { fill:#e74c3c; } 50% { fill:#c0392b; } } .safety-blink { animation:safetyFlash 1s infinite; }</style></defs>';
   s += '<rect x="0" y="0" width="'+viewW+'" height="'+canvasH+'" fill="'+BAS.bg+'"/>';
 
   const ductStart = (hasReturn && !config.includeOa) ? (items[0].x - 39) : (items[0].x - 22);
@@ -597,7 +597,7 @@ function updateSchematicReadouts(){
   const sde = document.getElementById('supplyDamperIcon_supplydamper'); if(sde) sde.innerHTML = damperGfx(sim.supplyDamperPos, activeFaults.supplyDamperStuck!==undefined);
   const cde = document.getElementById('supplyDamperIcon_coldDamper'); if(cde) cde.innerHTML = damperGfx(sim.coldDeckDamperPos, activeFaults.coldDeckDamperStuck!==undefined);
   const hde = document.getElementById('supplyDamperIcon_hotDamper'); if(hde) hde.innerHTML = damperGfx(sim.hotDeckDamperPos, activeFaults.hotDeckDamperStuck!==undefined);
-  const llim = document.getElementById('lowLimitIcon_preheat'); if(llim) llim.innerHTML = lowLimitGfx(latched.freezestat);
+  const llim = document.getElementById('lowLimitIcon_preheat'); if(llim) llim.innerHTML = '<rect x="-14" y="-8" width="28" height="16" rx="3" fill="'+(latched.freezestat?'#e74c3c':'var(--panel-inset)')+'" stroke="var(--line)" stroke-width="1" class="'+(latched.freezestat?'safety-blink':'')+'"/><text x="0" y="3" class="safetext'+(latched.freezestat?' tripped':'')+'" fill="'+(latched.freezestat?'#fff':'var(--text-dim)')+'">FRZ</text>';
   const bp = document.getElementById('boosterPumpIcon'); if(bp) bp.innerHTML = pumpGfx(activeFaults.boosterPumpFail? 'fail' : (sim.boosterPumpRun?'run':'off'));
   const aq = document.getElementById('aquastatIcon'); if(aq) aq.innerHTML = lowLimitGfx(latched.aquastat);
 
@@ -626,7 +626,7 @@ function updateSchematicReadouts(){
     const oaHotEl = document.getElementById('oaDamperIcon_hotMixbox'); if(oaHotEl) oaHotEl.innerHTML = damperGfx(config.airSystem==='return'? sim.hotOaDamperPos:0, activeFaults.hotOaDamperStuck!==undefined);
     const raHotEl = document.getElementById('raDamperIcon_hotMixbox'); if(raHotEl) raHotEl.innerHTML = damperGfx(config.airSystem==='return'? sim.hotRaDamperPos:0, false);
     const hotFilterEl = document.getElementById('filterIcon_hotFilter'); if(hotFilterEl) hotFilterEl.innerHTML = filterGfx(!!activeFaults.hotDeckDirtyFilter);
-    const hotLowLimitEl = document.getElementById('lowLimitIcon_hotFilter'); if(hotLowLimitEl) hotLowLimitEl.innerHTML = lowLimitGfx(latched.hotFreezestat);
+    const hotLowLimitEl = document.getElementById('lowLimitIcon_hotFilter'); if(hotLowLimitEl) hotLowLimitEl.innerHTML = '<rect x="-14" y="-8" width="28" height="16" rx="3" fill="'+(latched.hotFreezestat?'#e74c3c':'var(--panel-inset)')+'" stroke="var(--line)" stroke-width="1" class="'+(latched.hotFreezestat?'safety-blink':'')+'"/><text x="0" y="3" class="safetext'+(latched.hotFreezestat?' tripped':'')+'" fill="'+(latched.hotFreezestat?'#fff':'var(--text-dim)')+'">FRZ</text>';
     if(config.driveType==='vfd'){
       const isSingle = config.singleDrive || sim.hotDeckFans.length <= 1;
       if(isSingle){ const vfdHotEl = document.getElementById('vfdIcon_hotdeck'); if(vfdHotEl){ const failed = sim.hotDeckFans.some(f=>f.fail); const running = sim.hotDeckFanPct > 0; vfdHotEl.innerHTML = gfxWrap('vfd', (running?'active':'')+(failed?' in-alarm':'')+' value-'+roundTo10(sim.hotDeckFanPct), 1, 'hotdeckfan'); } }
@@ -674,9 +674,9 @@ function updateSchematicReadouts(){
 
   // High static trip indicators
   const hsTripEl = document.getElementById('highStaticTripIcon');
-  if(hsTripEl) hsTripEl.innerHTML = gfxWrap('lowLimit', latched.highStatic?'active':'', 0.9) + '<text x="0" y="22" font-family="Arial" font-size="7" text-anchor="middle" fill="'+BAS.textDim+'">HI-STAT</text>';
+  if(hsTripEl) hsTripEl.innerHTML = '<rect x="-20" y="-8" width="40" height="16" rx="3" fill="'+(latched.highStatic?'#e74c3c':'var(--panel-inset)')+'" stroke="var(--line)" stroke-width="1" class="'+(latched.highStatic?'safety-blink':'')+'"/><text x="0" y="3" class="safetext'+(latched.highStatic?' tripped':'')+'" fill="'+(latched.highStatic?'#fff':'var(--text-dim)')+'">HI-PRS</text>';
   const hsTripHotEl = document.getElementById('highStaticTripIconHot');
-  if(hsTripHotEl) hsTripHotEl.innerHTML = gfxWrap('lowLimit', latched.highStatic?'active':'', 0.9) + '<text x="0" y="22" font-family="Arial" font-size="7" text-anchor="middle" fill="'+BAS.textDim+'">HI-STAT</text>';
+  if(hsTripHotEl) hsTripHotEl.innerHTML = '<rect x="-20" y="-8" width="40" height="16" rx="3" fill="'+(latched.highStatic?'#e74c3c':'var(--panel-inset)')+'" stroke="var(--line)" stroke-width="1" class="'+(latched.highStatic?'safety-blink':'')+'"/><text x="0" y="3" class="safetext'+(latched.highStatic?' tripped':'')+'" fill="'+(latched.highStatic?'#fff':'var(--text-dim)')+'">HI-PRS</text>';
 }
 
 function buildSchematic(){
