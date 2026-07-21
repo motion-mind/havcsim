@@ -187,9 +187,9 @@ function renderSoo(){
   let tempItems = [];
   if(c.preheat) tempItems.push('Preheat Coil: Modulates to maintain leaving air temp at setpoint (default '+sp.preheatDischargeSP+'\u00b0F). Protects downstream coils from freezing.');
   tempItems.push('Cooling Coil'+(c.coolingCoils==='dual'?'s 1 & 2':'')+': Modulates to maintain '+(c.ductType==='dual'?'cold-deck ':'')+'supply temp at setpoint (default '+sp.coolingDischargeSP+'\u00b0F).'+(c.coolingCoils==='dual'?' Stage 2 engages when coil 1 exceeds 85%.':''));
-  if(c.ductType==='single' && c.reheat) tempItems.push('Reheat Coil (AHU-level): Modulates to maintain space temp at setpoint (default '+sp.reheatSpaceSP+'\u00b0F) for warm-air supply.');
+  if(c.reheat) tempItems.push('AHU Reheat Coil: Modulates to maintain space temp at setpoint (default '+sp.reheatSpaceSP+'\u00b0F) for warm-air supply.');
   if(c.ductType==='dual') tempItems.push('Hot Deck Coil: Modulates to maintain hot-deck discharge temp at setpoint (default '+sp.hotDeckSP+'\u00b0F).');
-  if(c.ductType==='single') tempItems.push('Terminal Unit Reheat: Each VAV box reheat coil (hot-water or electric) modulates on zone temperature error below setpoint.');
+  if(c.ductType==='single' && (c.vavCount > 0 || c.fcuCount > 0)) tempItems.push('Terminal Unit Reheat: Each VAV/FCU reheat coil ('+(c.vavReheatType||'hot-water')+') modulates on zone temperature error below setpoint.');
   sections.push({title:'Temperature Control', color:'var(--green)', items:tempItems});
 
   // 3. Humidity
