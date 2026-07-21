@@ -370,68 +370,65 @@ function stationLabel(cx,y,text){
   return '<text x="'+cx+'" y="'+(y+16)+'" font-family="Arial" font-size="9.5" text-anchor="middle" fill="'+BAS.textDim+'" letter-spacing=".02em">'+text+'</text>';
 }
 
-function bubble(cx, topY, tier, title, lines, accent, dx = 0, scale = 0.5){
-  const s = scale;
+function bubble(cx, topY, tier, title, lines, accent, dx = 0){
   let maxTextW = 0;
   lines.forEach((l, idx) => {
     let w = 0;
     for (let c of l) {
-      if (/[A-Z0-9\u00b0%#]/.test(c)) { w += (idx === 0) ? 7.8 : 7.0; }
-      else { w += (idx === 0) ? 6.2 : 5.5; }
+      if (/[A-Z0-9\u00b0%#]/.test(c)) { w += (idx === 0) ? 3.9 : 3.5; }
+      else { w += (idx === 0) ? 3.1 : 2.75; }
     }
     if (w > maxTextW) maxTextW = w;
   });
-  const bw = Math.max(68, Math.round(maxTextW + 18));
-  const bh=16+(lines.length-1)*13+6;
+  const bw = Math.max(34, Math.round(maxTextW + 9));
+  const bh=8+(lines.length-1)*7+3;
   const by = topY - tier - bh;
   const bx = cx + dx;
-  let html = '<line x1="'+cx+'" y1="'+topY+'" x2="'+bx+'" y2="'+(by+bh)+'" stroke="'+BAS.lineSoft+'" stroke-width="1"/>'+
-    '<g transform="translate('+bx+','+by+') scale('+s+')"><rect x="'+(0-bw/2)+'" y="0" width="'+bw+'" height="'+bh+'" rx="3" fill="'+BAS.bubbleFill+'" stroke="'+(accent||BAS.bubbleStroke)+'" stroke-width="1.3"/>'+
-    lines.map((l,i)=>'<text x="0" y="'+(14+i*13)+'" font-family="Arial, sans-serif" font-size="10.5" text-anchor="middle" fill="'+BAS.text+'" font-weight="'+(i===0?700:400)+'">'+l+'</text>').join('')+'</g>';
+  let html = '<line x1="'+cx+'" y1="'+topY+'" x2="'+bx+'" y2="'+(by+bh)+'" stroke="'+BAS.lineSoft+'" stroke-width="0.5"/>'+
+    '<rect x="'+(bx-bw/2)+'" y="'+by+'" width="'+bw+'" height="'+bh+'" rx="1.5" fill="'+BAS.bubbleFill+'" stroke="'+(accent||BAS.bubbleStroke)+'" stroke-width="0.65"/>';
+  lines.forEach((l,i)=>{ html += '<text x="'+bx+'" y="'+(by+7+i*7)+'" font-family="Arial, sans-serif" font-size="5.25" text-anchor="middle" fill="'+BAS.text+'" font-weight="'+(i===0?700:400)+'">'+l+'</text>'; });
   html += '<title>'+title+'</title>';
   return html;
 }
 
-function bubbleDown(cx, botY, tier, title, lines, accent, dx = 0, scale = 0.5){
-  const s = scale;
+function bubbleDown(cx, botY, tier, title, lines, accent, dx = 0){
   let maxTextW = 0;
   lines.forEach((l, idx) => {
     let w = 0;
     for (let c of l) {
-      if (/[A-Z0-9\u00b0%#]/.test(c)) { w += (idx === 0) ? 7.8 : 7.0; }
-      else { w += (idx === 0) ? 6.2 : 5.5; }
+      if (/[A-Z0-9\u00b0%#]/.test(c)) { w += (idx === 0) ? 3.9 : 3.5; }
+      else { w += (idx === 0) ? 3.1 : 2.75; }
     }
     if (w > maxTextW) maxTextW = w;
   });
-  const bw = Math.max(68, Math.round(maxTextW + 18));
-  const bh=16+(lines.length-1)*13+6;
+  const bw = Math.max(34, Math.round(maxTextW + 9));
+  const bh=8+(lines.length-1)*7+3;
   const by = botY + tier;
   const bx = cx + dx;
-  let html = '<line x1="'+cx+'" y1="'+botY+'" x2="'+bx+'" y2="'+by+'" stroke="'+BAS.lineSoft+'" stroke-width="1"/>'+
-    '<g transform="translate('+bx+','+by+') scale('+s+')"><rect x="'+(0-bw/2)+'" y="0" width="'+bw+'" height="'+bh+'" rx="3" fill="'+BAS.bubbleFill+'" stroke="'+(accent||BAS.bubbleStroke)+'" stroke-width="1.3"/>'+
-    lines.map((l,i)=>'<text x="0" y="'+(14+i*13)+'" font-family="Arial, sans-serif" font-size="10.5" text-anchor="middle" fill="'+BAS.text+'" font-weight="'+(i===0?700:400)+'">'+l+'</text>').join('')+'</g>';
+  let html = '<line x1="'+cx+'" y1="'+botY+'" x2="'+bx+'" y2="'+by+'" stroke="'+BAS.lineSoft+'" stroke-width="0.5"/>'+
+    '<rect x="'+(bx-bw/2)+'" y="'+by+'" width="'+bw+'" height="'+bh+'" rx="1.5" fill="'+BAS.bubbleFill+'" stroke="'+(accent||BAS.bubbleStroke)+'" stroke-width="0.65"/>';
+  lines.forEach((l,i)=>{ html += '<text x="'+bx+'" y="'+(by+7+i*7)+'" font-family="Arial, sans-serif" font-size="5.25" text-anchor="middle" fill="'+BAS.text+'" font-weight="'+(i===0?700:400)+'">'+l+'</text>'; });
   html += '<title>'+title+'</title>';
   return html;
 }
 
-function bubbleLeft(cx, cy, dx, title, lines, accent, scale = 0.5){
-  const s = scale;
+function bubbleLeft(cx, cy, dx, title, lines, accent){
   let maxTextW = 0;
   lines.forEach((l, idx) => {
     let w = 0;
     for (let c of l) {
-      if (/[A-Z0-9\u00b0%#]/.test(c)) { w += (idx === 0) ? 7.8 : 7.0; }
-      else { w += (idx === 0) ? 6.2 : 5.5; }
+      if (/[A-Z0-9\u00b0%#]/.test(c)) { w += (idx === 0) ? 3.9 : 3.5; }
+      else { w += (idx === 0) ? 3.1 : 2.75; }
     }
     if (w > maxTextW) maxTextW = w;
   });
-  const bw = Math.max(68, Math.round(maxTextW + 18));
-  const bh=16+(lines.length-1)*13+6;
+  const bw = Math.max(34, Math.round(maxTextW + 9));
+  const bh=8+(lines.length-1)*7+3;
   const by = cy - bh/2;
   const bx = cx + dx;
-  let html = '<line x1="'+cx+'" y1="'+cy+'" x2="'+(bx+bw/2)+'" y2="'+cy+'" stroke="'+BAS.lineSoft+'" stroke-width="1"/>'+
-    '<g transform="translate('+bx+','+by+') scale('+s+')"><rect x="'+(0-bw/2)+'" y="0" width="'+bw+'" height="'+bh+'" rx="3" fill="'+BAS.bubbleFill+'" stroke="'+(accent||BAS.bubbleStroke)+'" stroke-width="1.3"/>'+
-    lines.map((l,i)=>'<text x="0" y="'+(14+i*13)+'" font-family="Arial, sans-serif" font-size="10.5" text-anchor="middle" fill="'+BAS.text+'" font-weight="'+(i===0?700:400)+'">'+l+'</text>').join('')+'</g>';
+  let html = '<line x1="'+cx+'" y1="'+cy+'" x2="'+(bx+bw/2)+'" y2="'+cy+'" stroke="'+BAS.lineSoft+'" stroke-width="0.5"/>'+
+    '<rect x="'+(bx-bw/2)+'" y="'+by+'" width="'+bw+'" height="'+bh+'" rx="1.5" fill="'+BAS.bubbleFill+'" stroke="'+(accent||BAS.bubbleStroke)+'" stroke-width="0.65"/>';
+  lines.forEach((l,i)=>{ html += '<text x="'+bx+'" y="'+(by+7+i*7)+'" font-family="Arial, sans-serif" font-size="5.25" text-anchor="middle" fill="'+BAS.text+'" font-weight="'+(i===0?700:400)+'">'+l+'</text>'; });
   html += '<title>'+title+'</title>';
   return html;
 }
