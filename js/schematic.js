@@ -202,8 +202,8 @@ function buildSchematicCore(){
   }
   add('filter', 54, 'filter', 'Filter Bank'+coldSuffix);
   if(config.preheat) add('coil', 80, 'preheat', 'Preheat Coil'+coldSuffix);
-  const fanBaseName = showSecondRow ? 'Cold Deck Fan' : (config.supplyFan==='wall' ? 'Supply Fan Wall' : 'Supply Fan');
-  add('fan', config.supplyFan==='wall'? (26*config.supplyFanCount+20) : 66, 'supplyfan', showSecondRow ? (config.supplyFan==='wall'?'Cold Deck Fan Wall':fanBaseName) : fanBaseName);
+  const fanBaseName = showSecondRow ? (sharedDual ? 'Supply Fan' : 'Cold Deck Fan') : (config.supplyFan==='wall' ? 'Supply Fan Wall' : 'Supply Fan');
+  add('fan', config.supplyFan==='wall'? (26*config.supplyFanCount+20) : 66, 'supplyfan', showSecondRow ? (config.supplyFan==='wall'?(sharedDual?'Supply Fan Wall':'Cold Deck Fan Wall'):fanBaseName) : fanBaseName);
   if(config.driveType==='starter') add('supplydamper', 54, 'supplydamper', 'Supply Duct Damper');
   const forkX = x;
   const taperW = 50;
