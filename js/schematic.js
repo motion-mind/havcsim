@@ -415,7 +415,6 @@ function buildSchematicCore(){
       s += stationLabel(fanCenter, ry+24, config.returnFan==='wall'?'RETURN FAN WALL':'RETURN FAN');
       s += '<g id="readout_raSensor"></g>';
       if(config.includeEa){
-        for(let i=1;i<5;i++){ const yy = (ry-22) + i*(44/5); s += '<line x1="'+(rx0-26)+'" y1="'+yy+'" x2="'+rx0+'" y2="'+(yy-8)+'" stroke="'+BAS.lineSoft+'" stroke-width="2.2"/>'; }
         s += '<g id="eaDamperIcon" transform="translate('+exhaustX+','+ry+')">'+damperGfx(0,false,1.3)+'</g>';
         s += '<g id="readout_exhaust"></g>';
         s += stationLabel(rx0+ (exhaustX-rx0)/2 + 10, ry+24, 'EXHAUST AIR (EA)');
@@ -456,7 +455,6 @@ function buildSchematicCore(){
       s += stationLabel(fanCenter, ry+24, config.returnFan==='wall'?'RETURN FAN WALL':'RETURN FAN');
       s += '<g id="readout_raSensor"></g>';
       if(config.includeEa){
-        for(let i=1;i<5;i++){ const yy = (ry-22) + i*(44/5); s += '<line x1="'+(rx0-26)+'" y1="'+yy+'" x2="'+rx0+'" y2="'+(yy-8)+'" stroke="'+BAS.lineSoft+'" stroke-width="2.2"/>'; }
         s += '<g id="eaDamperIcon" transform="translate('+exhaustX+','+ry+')">'+damperGfx(0,false,1.3)+'</g>';
         s += '<g id="readout_exhaust"></g>';
         s += stationLabel(rx0+ (exhaustX-rx0)/2 + 10, ry+24, 'EXHAUST AIR (EA)');
