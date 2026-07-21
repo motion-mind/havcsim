@@ -375,18 +375,18 @@ function bubble(cx, topY, tier, title, lines, accent, dx = 0){
   lines.forEach((l, idx) => {
     let w = 0;
     for (let c of l) {
-      if (/[A-Z0-9\u00b0%#]/.test(c)) { w += (idx === 0) ? 3.9 : 3.5; }
-      else { w += (idx === 0) ? 3.1 : 2.75; }
+      if (/[A-Z0-9\u00b0%#]/.test(c)) { w += (idx === 0) ? 5.85 : 5.25; }
+      else { w += (idx === 0) ? 4.65 : 4.1; }
     }
     if (w > maxTextW) maxTextW = w;
   });
-  const bw = Math.max(34, Math.round(maxTextW + 9));
-  const bh=8+(lines.length-1)*7+3;
+  const bw = Math.max(51, Math.round(maxTextW + 14));
+  const bh=12+(lines.length-1)*10+5;
   const by = topY - tier - bh;
   const bx = cx + dx;
-  let html = '<line x1="'+cx+'" y1="'+topY+'" x2="'+bx+'" y2="'+(by+bh)+'" stroke="'+BAS.lineSoft+'" stroke-width="0.5"/>'+
-    '<rect x="'+(bx-bw/2)+'" y="'+by+'" width="'+bw+'" height="'+bh+'" rx="1.5" fill="'+BAS.bubbleFill+'" stroke="'+(accent||BAS.bubbleStroke)+'" stroke-width="0.65"/>';
-  lines.forEach((l,i)=>{ html += '<text x="'+bx+'" y="'+(by+7+i*7)+'" font-family="Arial, sans-serif" font-size="5.25" text-anchor="middle" fill="'+BAS.text+'" font-weight="'+(i===0?700:400)+'">'+l+'</text>'; });
+  let html = '<line x1="'+cx+'" y1="'+topY+'" x2="'+bx+'" y2="'+(by+bh)+'" stroke="'+BAS.lineSoft+'" stroke-width="0.75"/>'+
+    '<rect x="'+(bx-bw/2)+'" y="'+by+'" width="'+bw+'" height="'+bh+'" rx="2" fill="'+BAS.bubbleFill+'" stroke="'+(accent||BAS.bubbleStroke)+'" stroke-width="1"/>';
+  lines.forEach((l,i)=>{ html += '<text x="'+bx+'" y="'+(by+10.5+i*10)+'" font-family="Arial, sans-serif" font-size="8" text-anchor="middle" fill="'+BAS.text+'" font-weight="'+(i===0?700:400)+'">'+l+'</text>'; });
   html += '<title>'+title+'</title>';
   return html;
 }
@@ -396,18 +396,18 @@ function bubbleDown(cx, botY, tier, title, lines, accent, dx = 0){
   lines.forEach((l, idx) => {
     let w = 0;
     for (let c of l) {
-      if (/[A-Z0-9\u00b0%#]/.test(c)) { w += (idx === 0) ? 3.9 : 3.5; }
-      else { w += (idx === 0) ? 3.1 : 2.75; }
+      if (/[A-Z0-9\u00b0%#]/.test(c)) { w += (idx === 0) ? 5.85 : 5.25; }
+      else { w += (idx === 0) ? 4.65 : 4.1; }
     }
     if (w > maxTextW) maxTextW = w;
   });
-  const bw = Math.max(34, Math.round(maxTextW + 9));
-  const bh=8+(lines.length-1)*7+3;
+  const bw = Math.max(51, Math.round(maxTextW + 14));
+  const bh=12+(lines.length-1)*10+5;
   const by = botY + tier;
   const bx = cx + dx;
-  let html = '<line x1="'+cx+'" y1="'+botY+'" x2="'+bx+'" y2="'+by+'" stroke="'+BAS.lineSoft+'" stroke-width="0.5"/>'+
-    '<rect x="'+(bx-bw/2)+'" y="'+by+'" width="'+bw+'" height="'+bh+'" rx="1.5" fill="'+BAS.bubbleFill+'" stroke="'+(accent||BAS.bubbleStroke)+'" stroke-width="0.65"/>';
-  lines.forEach((l,i)=>{ html += '<text x="'+bx+'" y="'+(by+7+i*7)+'" font-family="Arial, sans-serif" font-size="5.25" text-anchor="middle" fill="'+BAS.text+'" font-weight="'+(i===0?700:400)+'">'+l+'</text>'; });
+  let html = '<line x1="'+cx+'" y1="'+botY+'" x2="'+bx+'" y2="'+by+'" stroke="'+BAS.lineSoft+'" stroke-width="0.75"/>'+
+    '<rect x="'+(bx-bw/2)+'" y="'+by+'" width="'+bw+'" height="'+bh+'" rx="2" fill="'+BAS.bubbleFill+'" stroke="'+(accent||BAS.bubbleStroke)+'" stroke-width="1"/>';
+  lines.forEach((l,i)=>{ html += '<text x="'+bx+'" y="'+(by+10.5+i*10)+'" font-family="Arial, sans-serif" font-size="8" text-anchor="middle" fill="'+BAS.text+'" font-weight="'+(i===0?700:400)+'">'+l+'</text>'; });
   html += '<title>'+title+'</title>';
   return html;
 }
@@ -417,18 +417,18 @@ function bubbleLeft(cx, cy, dx, title, lines, accent){
   lines.forEach((l, idx) => {
     let w = 0;
     for (let c of l) {
-      if (/[A-Z0-9\u00b0%#]/.test(c)) { w += (idx === 0) ? 3.9 : 3.5; }
-      else { w += (idx === 0) ? 3.1 : 2.75; }
+      if (/[A-Z0-9\u00b0%#]/.test(c)) { w += (idx === 0) ? 5.85 : 5.25; }
+      else { w += (idx === 0) ? 4.65 : 4.1; }
     }
     if (w > maxTextW) maxTextW = w;
   });
-  const bw = Math.max(34, Math.round(maxTextW + 9));
-  const bh=8+(lines.length-1)*7+3;
+  const bw = Math.max(51, Math.round(maxTextW + 14));
+  const bh=12+(lines.length-1)*10+5;
   const by = cy - bh/2;
   const bx = cx + dx;
-  let html = '<line x1="'+cx+'" y1="'+cy+'" x2="'+(bx+bw/2)+'" y2="'+cy+'" stroke="'+BAS.lineSoft+'" stroke-width="0.5"/>'+
-    '<rect x="'+(bx-bw/2)+'" y="'+by+'" width="'+bw+'" height="'+bh+'" rx="1.5" fill="'+BAS.bubbleFill+'" stroke="'+(accent||BAS.bubbleStroke)+'" stroke-width="0.65"/>';
-  lines.forEach((l,i)=>{ html += '<text x="'+bx+'" y="'+(by+7+i*7)+'" font-family="Arial, sans-serif" font-size="5.25" text-anchor="middle" fill="'+BAS.text+'" font-weight="'+(i===0?700:400)+'">'+l+'</text>'; });
+  let html = '<line x1="'+cx+'" y1="'+cy+'" x2="'+(bx+bw/2)+'" y2="'+cy+'" stroke="'+BAS.lineSoft+'" stroke-width="0.75"/>'+
+    '<rect x="'+(bx-bw/2)+'" y="'+by+'" width="'+bw+'" height="'+bh+'" rx="2" fill="'+BAS.bubbleFill+'" stroke="'+(accent||BAS.bubbleStroke)+'" stroke-width="1"/>';
+  lines.forEach((l,i)=>{ html += '<text x="'+bx+'" y="'+(by+10.5+i*10)+'" font-family="Arial, sans-serif" font-size="8" text-anchor="middle" fill="'+BAS.text+'" font-weight="'+(i===0?700:400)+'">'+l+'</text>'; });
   html += '<title>'+title+'</title>';
   return html;
 }
