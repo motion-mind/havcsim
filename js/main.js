@@ -4,6 +4,51 @@
 let currentTab = 'setup';
 const tabScrolls = {};
 
+/* ============================================================
+   POP-OUT SCHEMATIC WINDOW
+   ============================================================ */
+let popOutWindow = null;
+let popOutInterval = null;
+
+function openPopOut(){
+  if(popOutWindow && !popOutWindow.closed){ popOutWindow.focus(); return; }
+  const svg = document.getElementById('schematicSvg');
+  if(!svg) return;
+  const w = Math.min(1400, window.innerWidth - 100);
+  const h = Math.min(800, window.innerHeight - 100);
+  popOutWindow = window.open('', 'schematic_popout',
+    'width='+w+',height='+h+',scrollbars=no,resizable=yes');
+  if(!popOutWindow) return;
+
+  const cssLinks = Array.from(document.querySelectorAll('link[rel=stylesheet]')).map(l => l.outerHTML).join('\n');
+  const isLight = document.body.classList.contains('theme-light');
+  popOutWindow.document.write(`<!DOCTYPE html><html><head><title>AHU-1 Schematic</title>
+    <style>body{margin:0;background:#1a1c1e;overflow:hidden;display:flex;align-items:center;justify-content:center;height:100vh;}
+    body.light{background:#f4f5f7;}
+    #schematicSvg{display:block;width:100%;height:auto;max-height:100vh;}</style>${cssLinks}</head><body${isLight?' class="light"':''}>`);
+  popOutWindow.document.write(svg.outerHTML);
+  popOutWindow.document.write('</body></html>');
+  popOutWindow.document.close();
+
+  popOutWindow.addEventListener('beforeunload', ()=>{ popOutWindow = null; if(popOutInterval) clearInterval(popOutInterval); });
+
+  if(popOutInterval) clearInterval(popOutInterval);
+  popOutInterval = setInterval(() => {
+    if(!popOutWindow || popOutWindow.closed){
+      clearInterval(popOutInterval); popOutInterval = null; popOutWindow = null; return;
+    }
+    const src = document.getElementById('schematicSvg');
+    if(!src) return;
+    const isLightNow = document.body.classList.contains('theme-light');
+    popOutWindow.document.body.classList.toggle('light', isLightNow);
+    const clone = src.cloneNode(true);
+    const target = popOutWindow.document.getElementById('schematicSvg');
+    if(target && target.parentNode) target.parentNode.replaceChild(clone, target);
+  }, 300);
+}
+
+document.getElementById('btnPopOut').addEventListener('click', openPopOut);
+
 function switchTab(name){
   tabScrolls[currentTab] = window.scrollY || window.pageYOffset || document.documentElement.scrollTop;
   currentTab = name;
