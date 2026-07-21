@@ -281,8 +281,7 @@ function renderAhuFrame(){
   syncOaRhReadout();
   syncAgeReadout();
   updateSchematicReadouts();
-  renderFlowReadings();
-  renderTempReadings();
+
   renderEfficiencyReadings();
   if(sim.vav && sim.vav.length && document.getElementById('tab-vav').classList.contains('active')){ updateVavBoxGridValues(); }
   if(sim.ef && document.getElementById('tab-ef').classList.contains('active')){ renderExhaustFanTab(); }
