@@ -668,7 +668,7 @@ function updateSchematicReadouts(){
   }
   const spStubHotEl = document.getElementById('readout_spStubHot');
   if(spStubHotEl && window._schemSpStubHotCx !== undefined){
-    spStubHotEl.innerHTML = bubble(window._schemSpStubHotCx, window._schemSpStubHotY-30, 45, 'SP (2/3 Duct)', 
+    spStubHotEl.innerHTML = bubbleDown(window._schemSpStubHotCx, window._schemSpStubHotY + 30, 45, 'SP (2/3 Duct)', 
       [sp23Str+'" w.c.'], null, 0);
   }
 
