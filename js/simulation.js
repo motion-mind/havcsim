@@ -654,7 +654,8 @@ function tick(){
 
   if(config.driveType==='vfd'){
     let outPct;
-    if(!sfStartCmd){ sim.pid.supplyFlow.reset(); sim.pid.staticP.reset(); outPct = 0; }
+    if(sim.overrideSupplyFanSpeed){ sim.pid.supplyFlow.reset(); sim.pid.staticP.reset(); outPct = 0; }
+    else if(!sfStartCmd){ sim.pid.supplyFlow.reset(); sim.pid.staticP.reset(); outPct = 0; }
     else if(config.controlType==='cfm'){
       const cfmSP = config.ductType==='dual'? sp.supplyCfmSP / 2 : sp.supplyCfmSP;
       outPct = sim.pid.supplyFlow.update(cfmSP, sim.supplyCfm, DT, false);
@@ -741,7 +742,8 @@ function tick(){
     let targetReturnPct;
     if(config.driveType==='vfd'){
       let outPct;
-      if(!rfStartCmd){ sim.pid.returnFlow.reset(); outPct = 0; }
+      if(sim.overrideReturnFanSpeed){ sim.pid.returnFlow.reset(); outPct = 0; }
+      else if(!rfStartCmd){ sim.pid.returnFlow.reset(); outPct = 0; }
       else { outPct = sim.pid.returnFlow.update(target, (totalSupplyForReturn - sim.returnCfm), DT, false); }
       targetReturnPct = rfStartCmd ? (sim.overrideReturnFanSpeed ? sim.overrideReturnFanSpeedVal : clamp(Math.max(outPct,25),25,100)) : 0;
     } else { targetReturnPct = rfStartCmd ? (sim.overrideReturnFanSpeed ? sim.overrideReturnFanSpeedVal : 100) : 0; }
