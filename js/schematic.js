@@ -377,11 +377,11 @@ function buildSchematicCore(){
       // Cold riser: open top (connects to supply duct) + open bottom (connects to return main)
       s += vertDuctSVG(riserX-riserW/2, coldRiserTopY, riserW, coldRiserBotY-coldRiserTopY, true, true);
       s += arrowFlowLine(riserX, coldRiserTopY, riserX, coldRiserBotY, 'rev', 'flow_coldRiser', 'flow-rev');
-      if(config.includeOa && hasReturnFan) s += '<g id="raDamperIcon_mixbox" transform="translate('+riserX+','+((coldRiserTopY+coldRiserBotY)/2)+') rotate(90)">'+damperGfx(0,false)+'</g>';
+      if(config.includeOa) s += '<g id="raDamperIcon_mixbox" transform="translate('+riserX+','+((coldRiserTopY+coldRiserBotY)/2)+') rotate(90)">'+damperGfx(0,false)+'</g>';
       // Hot riser: open top (connects to return main) + open bottom (connects to hot deck)
       s += vertDuctSVG(hRiserX-riserW/2, hotRiserTopY, riserW, hotRiserBotY-hotRiserTopY, true, true);
       s += arrowFlowLine(hRiserX, hotRiserTopY, hRiserX, hotRiserBotY, 'fwd', 'flow_hotRiser', 'flow-fwd');
-      if(config.includeOa && hasReturnFan) s += '<g id="raDamperIcon_hotMixbox" transform="translate('+hRiserX+','+((hotRiserTopY+hotRiserBotY)/2)+') rotate(90)">'+damperGfx(0,false)+'</g>';
+      if(config.includeOa) s += '<g id="raDamperIcon_hotMixbox" transform="translate('+hRiserX+','+((hotRiserTopY+hotRiserBotY)/2)+') rotate(90)">'+damperGfx(0,false)+'</g>';
       const exhaustX = Math.min(riserX,hRiserX) - 90;
       const rx0 = config.includeEa ? (exhaustX - 40) : (Math.min(riserX,hRiserX) - 28);
       const returnFanCount = config.returnFan==='wall'? config.returnFanCount:1;
@@ -443,7 +443,7 @@ function buildSchematicCore(){
       s += vertDuctSVG(riserX-riserW/2, riserTopY, riserW, riserBotY-riserTopY, true, true);
       s += arrowFlowLine(riserX, riserTopY, riserX, riserBotY, 'rev', 'flow_coldRiser', 'flow-rev');
       const riserMidY = (riserTopY+riserBotY)/2;
-      if(config.includeOa && hasReturnFan) s += '<g id="raDamperIcon_mixbox" transform="translate('+riserX+','+riserMidY+') rotate(90)">'+damperGfx(0,false)+'</g>';
+      if(config.includeOa) s += '<g id="raDamperIcon_mixbox" transform="translate('+riserX+','+riserMidY+') rotate(90)">'+damperGfx(0,false)+'</g>';
       if(hasReturnFan){
         for(let i=0;i<returnFanCount;i++){ const fx = returnFanCount===1? fanCenter : (riserX+90+i*28); s += '<g id="fanicon_return_'+i+'" transform="translate('+fx+','+ry+')">'+fanReturnGfx('off', null, true)+'</g>'; }
         if(config.driveType==='vfd'){

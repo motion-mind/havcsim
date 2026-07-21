@@ -363,7 +363,8 @@ function renderAhuFrame(){
   if(svgEl){
     const sfRun = (config.ductType==='dual' && config.dualDuctIndependent) ? (sim.wantRunCold && sim.supplyFanPct > 5) : (sim.enabled && !tripped && sim.supplyFanPct > 5);
     const hdRun = (config.ductType==='dual' && config.dualDuctIndependent) ? (sim.wantRunHot && sim.hotDeckFanPct > 5) : (config.ductType==='dual' ? sfRun : (sim.enabled && !tripped && sim.hotDeckFanPct > 5));
-    const rfRun = (sim.wantRunCold || sim.wantRunHot) && sim.returnFanPct > 5;
+    const rfFanRun = config.returnFanCount > 0 ? (sim.wantRunCold || sim.wantRunHot) && sim.returnFanPct > 5 : false;
+    const rfRun = config.returnFanCount > 0 ? rfFanRun : sfRun;
     const supplyDamperOpen = config.driveType==='starter' ? (sim.supplyDamperPos >= 5) : true;
     const coldDamperOpen = config.ductType==='dual' ? (sim.coldDeckDamperPos >= 5) : true;
     const hotDamperOpen = config.ductType==='dual' ? (sim.hotDeckDamperPos >= 5) : true;
