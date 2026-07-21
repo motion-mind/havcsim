@@ -552,9 +552,9 @@ function updateSchematicReadouts(){
         lines = null;
       }
       else if(it.id==='filter') lines=['FILTER', activeFaults.dirtyFilter? 'DIRTY':'CLEAN'];
-      else if(it.id==='supplyfan') lines=[(config.dualDuctIndependent?'CD FAN ':'SF ')+fmt(sim.supplyFanPct,0)+'%', fmt(sim.supplyCfm,0)+' CFM', 'SP '+fmt(sp.highStaticSP * 0.8, 2)+'"'];
+      else if(it.id==='supplyfan') lines=[(config.dualDuctIndependent?'CD FAN ':'SF ')+fmt(sim.supplyFanPct,0)+'%', fmt(sim.supplyCfm,0)+' CFM', 'SP '+fmt(sim.staticPressureDisplay, 2)+'"'];
       else if(it.id==='humid'){ const effRh = sim.W_supply ? rhFromW(sim.raTemp || 72, sim.W_supply) * 100 : sim.saRH * 100; lines=['SA-RH '+fmt(effRh,0)+'%','VLV '+fmt(sim.humidValve,0)+'%']; }
-      else if(it.id==='discharge'){ const effRh = sim.W_supply ? rhFromW(sim.raTemp || 72, sim.W_supply) * 100 : sim.saRH * 100; lines=[(config.ductType==='dual'?'CD-SAT ':'SAT ')+fmt(config.ductType==='dual'?sim.coldDeckTemp:sim.satDisplayTemp,1)+'\u00b0F', 'SA-RH '+fmt(effRh,0)+'%', fmt(sim.supplyCfm,0)+' CFM', 'SP '+fmt(sp.highStaticSP * 0.8, 2)+'"']; accent='#2b6cb0'; }
+      else if(it.id==='discharge'){ const effRh = sim.W_supply ? rhFromW(sim.raTemp || 72, sim.W_supply) * 100 : sim.saRH * 100; lines=[(config.ductType==='dual'?'CD-SAT ':'SAT ')+fmt(config.ductType==='dual'?sim.coldDeckTemp:sim.satDisplayTemp,1)+'\u00b0F', 'SA-RH '+fmt(effRh,0)+'%', fmt(sim.supplyCfm,0)+' CFM', 'SP '+fmt(sim.staticPressureDisplay, 2)+'"']; accent='#2b6cb0'; }
       else if(it.id==='hotOaIntake') lines=['OAT '+fmt(sim.oat,1)+'\u00b0F','OAH '+fmt(sim.oaRH*100,0)+'%','OA '+fmt(sim.hotOaCfm,0)+' CFM'];
       else if(it.id==='hotMixbox') {
         const ry = window._schemReturnY;
@@ -569,7 +569,7 @@ function updateSchematicReadouts(){
         lines = null;
       }
       else if(it.id==='hotFilter') lines=['FILTER', activeFaults.hotDeckDirtyFilter? 'DIRTY':'CLEAN'];
-      else if(it.id==='hotdeckfan') lines=['HDF '+fmt(sim.hotDeckFanPct,0)+'%', fmt(sim.hotDeckCfm,0)+' CFM', 'SP '+fmt(sp.highStaticSP * 0.8, 2)+'"'];
+      else if(it.id==='hotdeckfan') lines=['HDF '+fmt(sim.hotDeckFanPct,0)+'%', fmt(sim.hotDeckCfm,0)+' CFM', 'SP '+fmt(sim.staticPressureDisplay, 2)+'"'];
       else if(it.id==='hotdischarge') lines=['HD-SAT '+fmt(sim.hotDeckTemp,1)+'\u00b0F', 'HD-RH '+fmt(rhFromW(sim.hotDeckTemp, sim.W_supply)*100,0)+'%', fmt(sim.hotDeckCfm,0)+' CFM', 'SP '+fmt(sp.highStaticSP * 0.8, 2)+'"'];
       if(lines) g.innerHTML = actualFlip? bubbleDown(originX, edgeY, tier, it.title, lines, accent, 0) : bubble(originX, edgeY, tier, it.title, lines, accent, 0);
 
@@ -653,24 +653,23 @@ function updateSchematicReadouts(){
     if(exhaustEl && window._schemExhaustBubbleX!==undefined){ exhaustEl.innerHTML = bubble(window._schemExhaustBubbleX, window._schemExhaustY-20, 26, 'Exhaust Air ('+pn('Exhaust Air','EA')+') Damper', ['EA DPR '+fmt(sim.eaDamperPos,0)+'%', fmt(sim.exhaustCfm,0)+' CFM'], null); }
   }
 
-  // Static pressure: swap between main duct and 2/3 stub
-  const hasTerminals = sim.vav && sim.vav.length > 0;
-  const spMain = fmt(hasTerminals ? sp.highStaticSP * 0.8 : sp.highStaticSP * 0.8, 2);
-  const spStub = fmt(hasTerminals ? sim.staticPressureDisplay : sp.highStaticSP * 0.8, 2);
+  // Static pressure: main duct shows actual supply static, 2/3 stub shows simulated 2/3 value
+  const sp23 = sim.sp23 !== undefined ? sim.sp23 : sp.highStaticSP * 0.8;
+  const sp23Str = fmt(sp23, 2);
   const spStubMainEl = document.getElementById('readout_spStubMain');
   if(spStubMainEl && window._schemSpStubMainCx !== undefined){
     spStubMainEl.innerHTML = bubble(window._schemSpStubMainCx, window._schemSpStubMainY-30, 45, 'SP (2/3 Duct)', 
-      [spStub+'" w.c.'], null, 0);
+      [sp23Str+'" w.c.'], null, 0);
   }
   const spStubColdEl = document.getElementById('readout_spStubCold');
   if(spStubColdEl && window._schemSpStubColdCx !== undefined){
     spStubColdEl.innerHTML = bubble(window._schemSpStubColdCx, window._schemSpStubColdY-30, 45, 'SP (2/3 Duct)', 
-      [spStub+'" w.c.'], null, 0);
+      [sp23Str+'" w.c.'], null, 0);
   }
   const spStubHotEl = document.getElementById('readout_spStubHot');
   if(spStubHotEl && window._schemSpStubHotCx !== undefined){
     spStubHotEl.innerHTML = bubble(window._schemSpStubHotCx, window._schemSpStubHotY-30, 45, 'SP (2/3 Duct)', 
-      [spStub+'" w.c.'], null, 0);
+      [sp23Str+'" w.c.'], null, 0);
   }
 
   // High static trip indicators

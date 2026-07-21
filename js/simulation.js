@@ -700,6 +700,17 @@ function tick(){
     sim.staticPressure = wantRun? clamp(supplyFlowFraction*sp.staticSP*1.15*(activeFaults.dirtyFilter? 1.6:1)*flowDegradation + (1-capFracSupply)*0.3,0,10) : 0;
   }
   sim.staticPressureDisplay = activeFaults.staticPressureSensorDrift ? Math.max(0, sim.staticPressure - 0.6) : sim.staticPressure;
+  if(!(sim.vav && sim.vav.length > 0) && wantRun){
+    const t = sim.age || 0;
+    const fluct = 1 + 0.04 * Math.sin(t * 0.08) + 0.025 * Math.sin(t * 0.17);
+    sim.staticPressureDisplay *= fluct;
+  }
+  if(sim.sp23Base === undefined) sim.sp23Base = 1 + Math.random() * 1.5;
+  if(wantRun){
+    const t = sim.age || 0;
+    const fluct23 = 0.08 * Math.sin(t * 0.06) + 0.05 * Math.sin(t * 0.14);
+    sim.sp23 = clamp(sim.sp23Base + fluct23, 0.5, 3);
+  } else { sim.sp23 = 0; }
 
   if(config.ductType==='dual'){
     let coldDamperTarget = activeFaults.coldDeckDamperStuck!==undefined? activeFaults.coldDeckDamperStuck : (wantRunCold? 92 : 0);
