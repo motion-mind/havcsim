@@ -113,7 +113,7 @@ function renderSetupGrid(){
   el.querySelectorAll('input[type=number][data-key]').forEach(inp=>{
     inp.addEventListener('change',()=>{
       const key = inp.dataset.key;
-      let minVal = (['vavCount','vavsExhaustCount','fcuCount','orCount','prCount'].includes(key))? 0 : 1;
+      let minVal = (['vavCount','vavsExhaustCount','fcuCount','orCount','prCount','returnFanCount'].includes(key))? 0 : 1;
       let maxVal = 12;
       if(['vavCount','vavsExhaustCount','fcuCount','orCount','prCount'].includes(key)) maxVal = 10;
       config[key]=clamp(parseInt(inp.value)||0, minVal, maxVal);

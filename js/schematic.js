@@ -59,11 +59,6 @@ function drawStation(it, ductY, ductH, laneFlip){
   const labelY = laneFlip==='up'? (topY-26) : botY;
   let html = '<g>';
   if(it.kind==='oaIntake' || it.kind==='oaIntake100'){
-    const leftDuctEdge = it.x - 22;
-    for(let i=1;i<5;i++){
-      const yy = topY + i*(ductH/5);
-      html += '<line x1="'+(leftDuctEdge-22)+'" y1="'+yy+'" x2="'+leftDuctEdge+'" y2="'+(yy-8)+'" stroke="'+BAS.lineSoft+'" stroke-width="2.2"/>';
-    }
     html += stationLabel(cx, labelY, shortDuctLabel(it.title));
   } else if(it.kind==='firedamper'){
     html += '<g id="fireDamperIcon_'+it.id+'" transform="translate('+cx+','+ductY+')">'+damperGfx(0,false)+'</g>';
