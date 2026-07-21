@@ -23,7 +23,8 @@ function renderFlowReadings(){
     }
     if(config.includeEa){ html += readingCard('Exhaust Air CFM', fmt(sim.exhaustCfm,0), 'cfm', false); }
   } else { html += readingCard('Outside Air CFM', fmt(sim.oaCfm,0), 'cfm', false); }
-  html += readingCard('Static Pressure', fmt(sim.staticPressureDisplay,2), 'in. w.c.', sim.staticPressureDisplay>sp.highStaticSP*0.9);
+  const hasTerms = sim.vav && sim.vav.length > 0;
+  html += readingCard('Static Pressure', fmt(hasTerms ? sp.highStaticSP * 0.8 : sim.staticPressureDisplay, 2), 'in. w.c.', sim.staticPressureDisplay>sp.highStaticSP*0.9);
   el.innerHTML = html;
 }
 
