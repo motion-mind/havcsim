@@ -684,4 +684,102 @@ function buildSchematic(){
   applyAllLayoutOverrides();
   renderCustomElements();
   attachLayoutDragging();
+  enablePanZoom();
+}
+
+function enablePanZoom(){
+  const svg = document.getElementById('schematicSvg');
+  if(!svg) return;
+  const origVb = svg.getAttribute('viewBox');
+  svg.setAttribute('data-orig-viewbox', origVb);
+  let vb = origVb.split(' ').map(Number);
+  let isPanning = false, startX, startY, startVb;
+  let lastDist = 0;
+
+  function setViewBox(vbArr){
+    vb = vbArr;
+    svg.setAttribute('viewBox', vb.join(' '));
+  }
+
+  svg.addEventListener('wheel', e => {
+    e.preventDefault();
+    const rect = svg.getBoundingClientRect();
+    const mx = e.clientX - rect.left;
+    const my = e.clientY - rect.top;
+    const fx = mx / rect.width;
+    const fy = my / rect.height;
+    const scale = e.deltaY > 0 ? 1.12 : 1/1.12;
+    const nw = Math.max(100, vb[2] * scale);
+    const nh = Math.max(100, vb[3] * scale);
+    const nx = vb[0] + (vb[2] - nw) * fx;
+    const ny = vb[1] + (vb[3] - nh) * fy;
+    setViewBox([nx, ny, nw, nh]);
+  }, { passive: false });
+
+  svg.addEventListener('mousedown', e => {
+    if(e.button !== 0) return;
+    isPanning = true;
+    startX = e.clientX; startY = e.clientY;
+    startVb = [...vb];
+    svg.style.cursor = 'grabbing';
+  });
+
+  window.addEventListener('mousemove', e => {
+    if(!isPanning) return;
+    const rect = svg.getBoundingClientRect();
+    const dx = (e.clientX - startX) / rect.width * vb[2];
+    const dy = (e.clientY - startY) / rect.height * vb[3];
+    setViewBox([startVb[0] - dx, startVb[1] - dy, vb[2], vb[3]]);
+  });
+
+  window.addEventListener('mouseup', () => {
+    if(isPanning){ isPanning = false; svg.style.cursor = ''; }
+  });
+
+  svg.addEventListener('dblclick', () => {
+    const orig = svg.getAttribute('data-orig-viewbox');
+    if(orig) setViewBox(orig.split(' ').map(Number));
+  });
+
+  svg.addEventListener('touchstart', e => {
+    if(e.touches.length === 1){
+      isPanning = true;
+      startX = e.touches[0].clientX; startY = e.touches[0].clientY;
+      startVb = [...vb];
+    } else if(e.touches.length === 2){
+      isPanning = false;
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      lastDist = Math.sqrt(dx*dx + dy*dy);
+    }
+  }, { passive: true });
+
+  svg.addEventListener('touchmove', e => {
+    if(e.touches.length === 1 && isPanning){
+      const rect = svg.getBoundingClientRect();
+      const dx = (e.touches[0].clientX - startX) / rect.width * vb[2];
+      const dy = (e.touches[0].clientY - startY) / rect.height * vb[3];
+      setViewBox([startVb[0] - dx, startVb[1] - dy, vb[2], vb[3]]);
+    } else if(e.touches.length === 2){
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if(lastDist > 0){
+        const scale = lastDist / dist;
+        const rect = svg.getBoundingClientRect();
+        const mx = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
+        const my = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
+        const fx = mx / rect.width;
+        const fy = my / rect.height;
+        const nw = Math.max(100, vb[2] * scale);
+        const nh = Math.max(100, vb[3] * scale);
+        const nx = vb[0] + (vb[2] - nw) * fx;
+        const ny = vb[1] + (vb[3] - nh) * fy;
+        setViewBox([nx, ny, nw, nh]);
+      }
+      lastDist = dist;
+    }
+  }, { passive: true });
+
+  svg.addEventListener('touchend', () => { isPanning = false; lastDist = 0; }, { passive: true });
 }
