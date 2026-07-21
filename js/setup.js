@@ -23,7 +23,8 @@ const setupFields = [
     opts:[['pct','0\u2013100%'],['vdc','0\u201310 VDC'],['ma','4\u201320 mA'],['psi38','3\u20138 PSI (Pneumatic)'],['psi315','3\u201315 PSI (Pneumatic)']]},
   {key:'airSystem', label:'Air System', type:'select', opts:[['return','Return Air System'],['oa100','100% Outside Air (OA)']], section:'return',
     onChange:(c)=>{ if(c.airSystem==='oa100'){ c.returnFanCount=1; c.returnFan='single'; } }},
-  {key:'returnFanCount', label:'Return Fan Motors', type:'number', min:1, max:12, hideIf: c=>c.airSystem==='oa100', section:'return'},
+  {key:'returnFanCount', label:'Return Fan Motors', type:'number', min:0, max:12, hideIf: c=>c.airSystem==='oa100', section:'return',
+    onChange:(c)=>{ if(c.returnFanCount===0){ c.includeEa=false; } c.returnFan=c.returnFanCount>1?'wall':'single'; }},
   {key:'coolingCoils', label:'Cooling Coil(s)', type:'select', opts:[['single','Single Cooling Coil'],['dual','Dual (2-Stage) Cooling Coils']], section:'coils'},
   {key:'preheat', label:'Preheat Coil', type:'bool', on:'Preheat Coil Installed', off:'No Preheat Coil', section:'coils',
     onChange:(c)=>{ if(!c.preheat){ c.preheatBoosterPump=false; c.preheatAquastat=false; } }},
@@ -119,6 +120,7 @@ function renderSetupGrid(){
       if(key === 'supplyFanCount'){
         config.supplyFan = config.supplyFanCount > 1 ? 'wall' : 'single';
       } else if(key === 'returnFanCount'){
+        if(config.returnFanCount === 0){ config.includeEa = false; }
         config.returnFan = config.returnFanCount > 1 ? 'wall' : 'single';
       }
       renderSetupGrid();

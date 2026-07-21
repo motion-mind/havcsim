@@ -130,7 +130,7 @@ function renderSetpoints(){
   if(sim){
     overrideRow('Supply Fan Start Command Override', 'SupplyFanStart', 'state', 1, true);
     if(config.driveType==='vfd') overrideRow('Supply Fan Speed Reference Override', 'SupplyFanSpeed', '%', 1);
-    if(config.airSystem==='return'){
+    if(config.airSystem==='return' && config.returnFanCount > 0){
       overrideRow('Return Fan Start Command Override', 'ReturnFanStart', 'state', 1, true);
       if(config.driveType==='vfd') overrideRow('Return Fan Speed Reference Override', 'ReturnFanSpeed', '%', 1);
     }
@@ -169,10 +169,16 @@ function renderSoo(){
 
   // 1. Fan & Ventilation
   let fanItems = [];
-  fanItems.push('Unit Enable: Supply fan starts when toggled' + (c.airSystem==='return' ? '. Return fan starts when configured.' : ''));
+  if(c.airSystem==='return' && c.returnFanCount > 0){
+    fanItems.push('Unit Enable: Supply fan starts when toggled. Return fan starts when configured.');
+    if(c.driveType==='vfd') fanItems.push('Return fan VFD modulates to track OA CFM setpoint. 90-second ramp.');
+  } else if(c.airSystem==='return'){
+    fanItems.push('Unit Enable: Supply fan starts when toggled. Return air controlled by barometric dampers (no return fan).');
+  } else {
+    fanItems.push('Unit Enable: Supply fan starts when toggled.');
+  }
   if(c.driveType==='vfd'){
     fanItems.push('VFD Control: Supply fan speed modulates to maintain '+(c.controlType==='cfm'?'CFM':'static pressure')+' setpoint. 120-second ramp.');
-    if(c.airSystem==='return') fanItems.push('Return fan VFD modulates to track OA CFM setpoint. 90-second ramp.');
   } else {
     fanItems.push('Starter Control: Fan runs at 100%; supply duct damper modulates airflow.');
   }
@@ -226,7 +232,7 @@ function renderFanStatus(){
   }
   html += '<div>'+fanBlock((config.ductType==='dual'&&config.dualDuctIndependent)?'Cold Deck Fan':'Supply Fan', sim.supplyFans, sim.supplyFanPct, sim.supplyFanPct>0?'RUN':'OFF')+'</div>';
   if(config.ductType==='dual' && config.dualDuctIndependent) html += '<div>'+fanBlock('Hot Deck Fan', sim.hotDeckFans, sim.hotDeckFanPct, sim.hotDeckFanPct>0?'RUN':'OFF')+'</div>';
-  if(config.airSystem==='return') html += '<div>'+fanBlock('Return Fan', sim.returnFans, sim.returnFanPct, sim.returnFanPct>0?'RUN':'OFF')+'</div>';
+  if(config.airSystem==='return' && config.returnFanCount > 0) html += '<div>'+fanBlock('Return Fan', sim.returnFans, sim.returnFanPct, sim.returnFanPct>0?'RUN':'OFF')+'</div>';
   if(config.preheat && config.preheatBoosterPump){
     html += '<div><h3 style="font-size:11px;color:var(--text-dim);font-family:var(--mono);text-transform:uppercase;margin:0 0 8px;">Preheat Booster Pump</h3><div class="fanwall"><div class="fan-unit '+(sim.boosterPumpRun?'run':'off')+'"><div class="glyph">&#9881;</div><div class="lbl">'+(sim.boosterPumpRun?'RUN':'OFF')+'</div></div></div></div>';
   }

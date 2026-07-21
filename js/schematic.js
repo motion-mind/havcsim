@@ -174,7 +174,7 @@ function buildSchematicCore(){
   const independent = config.ductType==='dual' && config.dualDuctIndependent;
   const sharedDual = config.ductType==='dual' && !independent;
   const showSecondRow = independent || sharedDual;
-  const hasReturn = config.airSystem==='return';
+  const hasReturn = config.airSystem==='return' && config.returnFanCount > 0;
   const ductH = 60;
   const laneGap = 24;
   const laneOffset = ductH/2 + laneGap/2;
@@ -636,7 +636,7 @@ function updateSchematicReadouts(){
     else { const el=document.getElementById('fanicon_hotdeck_0'); if(el) el.innerHTML=fanSupplyGfx(sim.hotDeckFanPct>0?'run':'off'); }
   }
 
-  if(config.airSystem==='return'){
+  if(config.airSystem==='return' && config.returnFanCount > 0){
     if(sim.returnFans.length){ sim.returnFans.forEach((f,i)=>{ const el=document.getElementById('fanicon_return_'+i); if(el) el.innerHTML=fanReturnGfx(f.fail?'fail':(f.run?'run':'off'), null, true); }); }
     else { const el=document.getElementById('fanicon_return_0'); if(el) el.innerHTML=fanReturnGfx(sim.returnFanPct>0?'run':'off', null, true); }
     const rg = document.getElementById('readout_returnfan');

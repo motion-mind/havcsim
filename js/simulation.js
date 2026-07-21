@@ -14,7 +14,7 @@ function slew(current, target, maxStepPerSec){
 }
 
 function fanWallCapacityFraction(list){
-  if(!list.length) return 1;
+  if(!list.length) return 0;
   const running = list.filter(f=>!f.fail).length;
   return running/list.length;
 }
