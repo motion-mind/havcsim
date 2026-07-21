@@ -685,7 +685,20 @@ function tick(){
   if(age >= 50) casingLeak = 0.12;
   else if(age >= 40) casingLeak = 0.06;
   sim.supplyCfm = wantRun? designCfm*supplyFlowFraction*capFracSupply*(0.97+0.06*Math.random())*flowDegradation*(1-casingLeak) : 0;
-  sim.staticPressure = wantRun? clamp(supplyFlowFraction*sp.staticSP*1.15*(activeFaults.dirtyFilter? 1.6:1)*flowDegradation + (1-capFracSupply)*0.3,0,10) : 0;
+  if(config.controlType==='static'){
+    if(sim.vav && sim.vav.length > 0){
+      const vavDprs = sim.vav.filter(b => b.type !== 'fcu' && b.damperPos !== undefined).map(b => b.damperPos);
+      const avgDpr = vavDprs.length > 0 ? vavDprs.reduce((a,b) => a+b, 0) / vavDprs.length : VAV_MIN_PCT;
+      const dprFrac = clamp((avgDpr - VAV_MIN_PCT) / (100 - VAV_MIN_PCT), 0, 1);
+      sim.staticPressure = wantRun ? sp.highStaticSP * 0.8 * (1 - dprFrac) : 0;
+    } else {
+      const driveFrac = config.driveType==='vfd' ? (sim.supplyFanPct/100) : (sim.supplyDamperPos/100);
+      const variation = 0.9 + Math.random() * 0.2;
+      sim.staticPressure = wantRun ? driveFrac * sp.highStaticSP * 0.8 * variation : 0;
+    }
+  } else {
+    sim.staticPressure = wantRun? clamp(supplyFlowFraction*sp.staticSP*1.15*(activeFaults.dirtyFilter? 1.6:1)*flowDegradation + (1-capFracSupply)*0.3,0,10) : 0;
+  }
   sim.staticPressureDisplay = activeFaults.staticPressureSensorDrift ? Math.max(0, sim.staticPressure - 0.6) : sim.staticPressure;
 
   if(config.ductType==='dual'){
