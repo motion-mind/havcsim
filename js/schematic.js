@@ -307,7 +307,7 @@ function buildSchematicCore(){
     s += '<text x="'+ductStart+'" y="'+(coldY-ductH/2-10)+'" font-family="Arial" font-size="10" font-weight="700" fill="'+BAS.textDim+'">SUPPLY SPLITS TO COLD / HOT DECK</text>';
     preforkItems.forEach(it=>{ s += drawStation(it, coldY, ductH); });
     coldLaneItems.forEach(it=>{ s += drawStation(it, coldLaneY, ductH, 'up'); });
-    s += '<g id="highStaticTripIcon" transform="translate('+(ductEnd-60)+','+(coldLaneY-ductH/2-40)+')"></g>';
+    s += '<g id="highStaticTripIcon" transform="translate('+(ductEnd-70)+','+(coldLaneY-ductH/2-6)+')"></g>';
     // Static pressure sensor on a short stub after the main duct (represents 2/3 down unknown duct length)
     const cStubStart = ductEnd + 12;
     const cStubW = 120;
@@ -337,7 +337,7 @@ function buildSchematicCore(){
     window._schemSpStubMainCx = stubCx;
     window._schemSpStubMainY = coldY;
     items.forEach(it=>{ s += drawStation(it, coldY, ductH); });
-    s += '<g id="highStaticTripIcon" transform="translate('+(ductEnd-60)+','+(coldY-ductH/2-40)+')"></g>';
+    s += '<g id="highStaticTripIcon" transform="translate('+(ductEnd-70)+','+(coldY-ductH/2-6)+')"></g>';
   }
 
   if(showSecondRow && hotItems.length){
@@ -368,7 +368,7 @@ function buildSchematicCore(){
     window._schemSpStubHotCx = hStubCx;
     window._schemSpStubHotY = hotY;
     hotItems.forEach(it=>{ s += drawStation(it, hotY, ductH, sharedDual?'down':undefined); });
-    s += '<g id="highStaticTripIconHot" transform="translate('+(hDuctEnd-60)+','+(hotY-ductH/2-40)+')"></g>';
+    s += '<g id="highStaticTripIconHot" transform="translate('+(hDuctEnd-70)+','+(hotY-ductH/2-6)+')"></g>';
   }
   window._schemHotFlip = showSecondRow;
   let returnFanCx=null, returnY=null;
