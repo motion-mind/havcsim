@@ -739,7 +739,7 @@ function tick(){
     if(sim.economizerActive){
       target = totalSupplyForReturn;
     } else {
-      target = sp.oaCfmSP;
+      target = sim.oaCfm || 0;
     }
     let targetReturnPct;
     if(config.driveType==='vfd'){
