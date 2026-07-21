@@ -10,40 +10,95 @@ const tabScrolls = {};
 let popOutWindow = null;
 let popOutInterval = null;
 
+function syncSvgNodes(src, tgt){
+  if(src.nodeType === 3){ if(tgt.textContent !== src.textContent) tgt.textContent = src.textContent; return; }
+  if(src.nodeType !== 1 || tgt.nodeType !== 1) return;
+  const sc = src.getAttribute('class'), tc = tgt.getAttribute('class');
+  if(sc !== tc) tgt.setAttribute('class', sc || '');
+  const ss = src.getAttribute('style'), ts = tgt.getAttribute('style');
+  if(ss !== ts) tgt.setAttribute('style', ss || '');
+  let si = 0, ti = 0;
+  while(si < src.childNodes.length && ti < tgt.childNodes.length){
+    const sn = src.childNodes[si], tn = tgt.childNodes[ti];
+    if(sn.nodeType === tn.nodeType && sn.nodeName === tn.nodeName){
+      syncSvgNodes(sn, tn); si++; ti++;
+    } else if(sn.nodeType === 3 || sn.nodeType === 1){ tgt.insertBefore(sn.cloneNode(true), tn); si++; }
+    else { si++; }
+  }
+  while(ti < tgt.childNodes.length) tgt.removeChild(tgt.childNodes[ti]);
+  while(si < src.childNodes.length){ tgt.appendChild(src.childNodes[si].cloneNode(true)); si++; }
+}
+
 function openPopOut(){
   if(popOutWindow && !popOutWindow.closed){ popOutWindow.focus(); return; }
   const svg = document.getElementById('schematicSvg');
   if(!svg) return;
+  const mainSvg = document.getElementById('schemContainer');
+  if(mainSvg) mainSvg.style.display = 'none';
   const w = Math.min(1400, window.innerWidth - 100);
   const h = Math.min(800, window.innerHeight - 100);
   popOutWindow = window.open('', 'schematic_popout',
     'width='+w+',height='+h+',scrollbars=no,resizable=yes');
-  if(!popOutWindow) return;
+  if(!popOutWindow){ if(mainSvg) mainSvg.style.display = ''; return; }
 
   const cssLinks = Array.from(document.querySelectorAll('link[rel=stylesheet]')).map(l => l.outerHTML).join('\n');
   const isLight = document.body.classList.contains('theme-light');
-  popOutWindow.document.write(`<!DOCTYPE html><html><head><title>AHU-1 Schematic</title>
-    <style>body{margin:0;background:#1a1c1e;overflow:hidden;display:flex;align-items:center;justify-content:center;height:100vh;}
-    body.light{background:#f4f5f7;}
-    #schematicSvg{display:block;width:100%;height:auto;max-height:100vh;}</style>${cssLinks}</head><body${isLight?' class="light"':''}>`);
+  const panZoomJs = `
+function enablePanZoom(){
+  var svg=document.getElementById('schematicSvg'); if(!svg) return;
+  var vb=svg.getAttribute('viewBox').split(' ').map(Number);
+  var isPanning=false,sx,sy,svb,ld=0;
+  svg.style.cursor='grab';
+  svg.addEventListener('wheel',function(e){
+    e.preventDefault(); var r=svg.getBoundingClientRect();
+    var fx=(e.clientX-r.left)/r.width,fy=(e.clientY-r.top)/r.height;
+    var s=e.deltaY>0?1.12:1/1.12;
+    var nw=Math.max(100,vb[2]*s),nh=Math.max(100,vb[3]*s);
+    var nx=vb[0]+(vb[2]-nw)*fx,ny=vb[1]+(vb[3]-nh)*fy;
+    vb=[nx,ny,nw,nh]; svg.setAttribute('viewBox',vb.join(' '));
+  },{passive:false});
+  svg.addEventListener('mousedown',function(e){
+    if(e.button!==0)return; isPanning=true; sx=e.clientX; sy=e.clientY; svb=vb.slice(); svg.style.cursor='grabbing';
+  });
+  window.addEventListener('mousemove',function(e){
+    if(!isPanning)return; var r=svg.getBoundingClientRect();
+    var dx=(e.clientX-sx)/r.width*vb[2],dy=(e.clientY-sy)/r.height*vb[3];
+    vb=[svb[0]-dx,svb[1]-dy,vb[2],vb[3]]; svg.setAttribute('viewBox',vb.join(' '));
+  });
+  window.addEventListener('mouseup',function(){if(isPanning){isPanning=false;svg.style.cursor='grab';}});
+  svg.addEventListener('dblclick',function(){
+    var o=svg.getAttribute('data-orig-viewbox'); if(o){ vb=o.split(' ').map(Number); svg.setAttribute('viewBox',o); }
+  });
+}
+enablePanZoom();`;
+  popOutWindow.document.write('<!DOCTYPE html><html><head><title>AHU-1 Schematic</title>'+
+    '<style>body{margin:0;background:#1a1c1e;overflow:hidden;display:flex;align-items:center;justify-content:center;height:100vh;}'+
+    'body.light{background:#f4f5f7;}#schematicSvg{display:block;width:100%;height:auto;max-height:100vh;cursor:grab;}</style>'+
+    cssLinks+'</head><body'+(isLight?' class="light"':'')+'>');
   popOutWindow.document.write(svg.outerHTML);
-  popOutWindow.document.write('</body></html>');
+  popOutWindow.document.write('<script>'+panZoomJs+'</script></body></html>');
   popOutWindow.document.close();
 
-  popOutWindow.addEventListener('beforeunload', ()=>{ popOutWindow = null; if(popOutInterval) clearInterval(popOutInterval); });
+  popOutWindow.addEventListener('beforeunload', function(){
+    popOutWindow = null; if(popOutInterval) clearInterval(popOutInterval);
+    var ms = document.getElementById('schemContainer');
+    if(ms) ms.style.display = '';
+  });
 
   if(popOutInterval) clearInterval(popOutInterval);
-  popOutInterval = setInterval(() => {
+  popOutInterval = setInterval(function(){
     if(!popOutWindow || popOutWindow.closed){
-      clearInterval(popOutInterval); popOutInterval = null; popOutWindow = null; return;
+      clearInterval(popOutInterval); popOutInterval = null; popOutWindow = null;
+      var ms = document.getElementById('schemContainer');
+      if(ms) ms.style.display = '';
+      return;
     }
-    const src = document.getElementById('schematicSvg');
+    var src = document.getElementById('schematicSvg');
     if(!src) return;
-    const isLightNow = document.body.classList.contains('theme-light');
+    var isLightNow = document.body.classList.contains('theme-light');
     popOutWindow.document.body.classList.toggle('light', isLightNow);
-    const clone = src.cloneNode(true);
-    const target = popOutWindow.document.getElementById('schematicSvg');
-    if(target && target.parentNode) target.parentNode.replaceChild(clone, target);
+    var tgt = popOutWindow.document.getElementById('schematicSvg');
+    if(tgt) syncSvgNodes(src, tgt);
   }, 300);
 }
 
