@@ -257,6 +257,18 @@ document.getElementById('btnRandomFault').addEventListener('click', ()=>{ const 
 document.getElementById('btnClearManualFaultsOnly').addEventListener('click', clearManualFaultsOnly);
 document.getElementById('btnClearFaults').addEventListener('click', clearAllFaults);
 
+document.getElementById('btnToggleFreezestat').addEventListener('click', ()=>{
+  latched.freezestat = !latched.freezestat;
+  if(latched.freezestat){ applyFaultById('freezestatNuisance'); }
+  else { currentFaultDesc = currentFaultDesc.filter(f => f.label !== faultsCatalog.find(x=>x.id==='freezestatNuisance').label); renderActiveFaults(); }
+  document.getElementById('btnToggleFreezestat').classList.toggle('danger', latched.freezestat);
+});
+document.getElementById('btnToggleStaticDrift').addEventListener('click', ()=>{
+  activeFaults.staticPressureSensorDrift = !activeFaults.staticPressureSensorDrift;
+  if(activeFaults.staticPressureSensorDrift){ applyFaultById('staticPressureSensorDrift'); }
+  else { currentFaultDesc = currentFaultDesc.filter(f => f.label !== faultsCatalog.find(x=>x.id==='staticPressureSensorDrift').label); renderActiveFaults(); }
+  document.getElementById('btnToggleStaticDrift').classList.toggle('danger', activeFaults.staticPressureSensorDrift);
+});
 document.getElementById('btnClearProbes').addEventListener('click', ()=>{ probeRed=null; probeBlack=null; renderTerminalBoard(); refreshMeter(); });
 document.getElementById('btnReplaceMeter').addEventListener('click', ()=>{ meterDamaged=false; probeRed=null; probeBlack=null; renderTerminalBoard(); refreshMeter(); });
 document.getElementById('btnClearVavProbes').addEventListener('click', ()=>{ vavProbeRed=null; vavProbeBlack=null; renderVavTerminalBoard(); refreshVavMeter(); });

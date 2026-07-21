@@ -279,16 +279,20 @@
     <div class="subhead">Manual Fault Injection</div>
     <div class="grid g2">
       <div>
-        <label class="field">Pick a Specific Situation
-          <select id="faultPicker"></select>
-        </label>
-        <div class="btnrow" style="margin-top:10px;">
-          <button class="btn warn" id="btnApplyFault">Apply Selected</button>
-          <button class="btn danger" id="btnRandomFault">Randomize Fault / Emergency</button>
-          <button class="btn warn" id="btnClearManualFaultsOnly">Clear Manual Faults Only</button>
-          <button class="btn" id="btnClearFaults">Clear All Faults</button>
+          <label class="field">Pick a Specific Situation
+            <select id="faultPicker"></select>
+          </label>
+          <div class="btnrow" style="margin-top:10px;">
+            <button class="btn warn" id="btnApplyFault">Apply Selected</button>
+            <button class="btn danger" id="btnRandomFault">Randomize Fault / Emergency</button>
+            <button class="btn warn" id="btnClearManualFaultsOnly">Clear Manual Faults Only</button>
+            <button class="btn" id="btnClearFaults">Clear All Faults</button>
+          </div>
+          <div class="btnrow" style="margin-top:8px;gap:4px;">
+            <button class="btn btn-xs" id="btnToggleFreezestat">Trip Freezestat</button>
+            <button class="btn btn-xs" id="btnToggleStaticDrift">Drift SP Sensor</button>
+          </div>
         </div>
-      </div>
       <div>
         <h3 style="font-size:11px;color:var(--text-dim);font-family:var(--mono);text-transform:uppercase;margin:0 0 8px;">Active</h3>
         <div class="fault-active-list" id="activeFaultList"><span style="color:var(--text-faint);font-size:12px;">No active faults &mdash; system nominal.</span></div>
