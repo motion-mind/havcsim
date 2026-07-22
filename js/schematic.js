@@ -577,7 +577,7 @@ function updateSchematicReadouts(){
         lines = null;
       }
       else if(it.id==='filter') lines=['FILTER', activeFaults.dirtyFilter? 'DIRTY':'CLEAN'];
-      else if(it.id==='supplyfan') lines=[(config.dualDuctIndependent?'CD FAN ':'SF ')+fmt(sim.supplyFanPct,0)+'%', fmt(sim.supplyCfm,0)+' CFM'];
+      else if(it.id==='supplyfan'){ lines=[(config.dualDuctIndependent?'CD FAN ':'SF ')+fmt(sim.supplyFanPct,0)+'%', fmt(sim.supplyCfm,0)+' CFM']; if(config.driveType==='vfd') accent = 'vfd_'+roundTo10(sim.supplyFanPct); }
       else if(it.id==='humid'){ const effRh = sim.W_supply ? rhFromW(sim.raTemp || 72, sim.W_supply) * 100 : sim.saRH * 100; lines=['SA-RH '+fmt(effRh,0)+'%','VLV '+fmt(sim.humidValve,0)+'%']; }
       else if(it.id==='discharge'){ const effRh = sim.W_supply ? rhFromW(sim.raTemp || 72, sim.W_supply) * 100 : sim.saRH * 100; const spFluct = 1 + 0.1 * Math.sin((sim.age||0) * 0.07) * Math.sin((sim.age||0) * 0.13); const driveFrac = config.driveType==='vfd' ? (sim.supplyFanPct/100) : (sim.supplyDamperPos/100); lines=[(config.ductType==='dual'?'CD-SAT ':'SAT ')+fmt(config.ductType==='dual'?sim.coldDeckTemp:sim.satDisplayTemp,1)+'\u00b0F', 'SA-RH '+fmt(effRh,0)+'%', fmt(sim.supplyCfm,0)+' CFM', 'SP '+fmt(driveFrac * sp.highStaticSP * 0.9 * spFluct, 2)+'"']; accent='#2b6cb0'; }
       else if(it.id==='hotOaIntake') lines=['OAT '+fmt(sim.oat,1)+'\u00b0F','OAH '+fmt(sim.oaRH*100,0)+'%','OA '+fmt(sim.hotOaCfm,0)+' CFM'];
@@ -596,7 +596,11 @@ function updateSchematicReadouts(){
       else if(it.id==='hotFilter') lines=['FILTER', activeFaults.hotDeckDirtyFilter? 'DIRTY':'CLEAN'];
       else if(it.id==='hotdeckfan') lines=['HDF '+fmt(sim.hotDeckFanPct,0)+'%', fmt(sim.hotDeckCfm,0)+' CFM'];
       else if(it.id==='hotdischarge'){ const spFluct = 1 + 0.1 * Math.sin((sim.age||0) * 0.07) * Math.sin((sim.age||0) * 0.13); const driveFrac = config.driveType==='vfd' ? (sim.supplyFanPct/100) : (sim.supplyDamperPos/100); lines=['HD-SAT '+fmt(sim.hotDeckTemp,1)+'\u00b0F', 'HD-RH '+fmt(rhFromW(sim.hotDeckTemp, sim.W_supply)*100,0)+'%', fmt(sim.hotDeckCfm,0)+' CFM', 'SP '+fmt(driveFrac * sp.highStaticSP * 0.9 * spFluct, 2)+'"']; }
-      if(lines) g.innerHTML = actualFlip? bubbleDown(originX, edgeY, tier, it.title, lines, accent, 0) : bubble(originX, edgeY, tier, it.title, lines, accent, 0);
+      if(lines){
+        let iconHtml = null;
+        if(accent && accent.startsWith('vfd_')){ iconHtml = gfxWrap('vfd', 'value-'+accent.slice(4), 1, it.id+'_vfd'); accent = null; }
+        g.innerHTML = actualFlip? bubbleDown(originX, edgeY, tier, it.title, lines, accent, 0, iconHtml) : bubble(originX, edgeY, tier, it.title, lines, accent, 0, iconHtml);
+      }
 
       if(it.id === 'mixbox' || it.id === 'hotMixbox') {
         const oadEl = document.getElementById('readout_oaDamper_' + it.id);
