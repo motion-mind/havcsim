@@ -264,11 +264,13 @@ function renderSafeties(){
   }
   let html = '';
   if(config.includeOa){
-    html += chip('Low Temp Detector (Freezestat), '+pn('Outside Air','OA'), latched.freezestat, true, 'freezestat');
-    if(config.ductType==='dual' && config.dualDuctIndependent) html += chip('Low Temp Detector (Freezestat), Hot Deck', latched.hotFreezestat, true, 'hotfreezestat');
+    const isInd = config.ductType==='dual' && config.dualDuctIndependent;
+    html += chip(isInd ? 'Low Temp Detector, Cold Deck' : 'Low Temp Detector', latched.freezestat, true, 'freezestat');
+    if(isInd) html += chip('Low Temp Detector, Hot Deck', latched.hotFreezestat, true, 'hotfreezestat');
   }
   html += chip('High Static Detector, '+pn('Supply Air','SA'), latched.highStatic, true, 'highstatic');
-  sim.supplyFans.forEach(f => html += chip('Supply Fan M'+f.id+' Overload', f.fail, true, 'ol_supply_'+f.id));
+  const sfLabel = (config.ductType==='dual' && config.dualDuctIndependent) ? 'Cold Deck Fan' : 'Supply Fan';
+  sim.supplyFans.forEach(f => html += chip(sfLabel+' M'+f.id+' Overload', f.fail, true, 'ol_supply_'+f.id));
   if(sim.hotDeckFans.length) sim.hotDeckFans.forEach(f => html += chip('Hot Deck Fan M'+f.id+' Overload', f.fail, true, 'ol_hotdeck_'+f.id));
   if(config.returnFanCount > 0) sim.returnFans.forEach(f => html += chip('Return Fan M'+f.id+' Overload', f.fail, true, 'ol_return_'+f.id));
   if(config.preheat && config.preheatAquastat) html += chip('Preheat Water Low-Temperature Aquastat', latched.aquastat, true, 'aquastat');
