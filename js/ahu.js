@@ -268,6 +268,9 @@ function renderSafeties(){
     if(config.ductType==='dual' && config.dualDuctIndependent) html += chip('Low Temp Detector (Freezestat), Hot Deck', latched.hotFreezestat, true, 'hotfreezestat');
   }
   html += chip('High Static Detector, '+pn('Supply Air','SA'), latched.highStatic, true, 'highstatic');
+  sim.supplyFans.forEach(f => html += chip('Supply Fan M'+f.id+' Overload', f.fail, true, 'ol_supply_'+f.id));
+  if(sim.hotDeckFans.length) sim.hotDeckFans.forEach(f => html += chip('Hot Deck Fan M'+f.id+' Overload', f.fail, true, 'ol_hotdeck_'+f.id));
+  if(config.returnFanCount > 0) sim.returnFans.forEach(f => html += chip('Return Fan M'+f.id+' Overload', f.fail, true, 'ol_return_'+f.id));
   if(config.preheat && config.preheatAquastat) html += chip('Preheat Water Low-Temperature Aquastat', latched.aquastat, true, 'aquastat');
   html += chip('General Fire Alarm', manualSafety.fireAlarm, true, 'firealarm');
   html += chip('Smoke Damper End Switch', manualSafety.smokeDamperFail, true, 'smokedamper');
@@ -280,6 +283,7 @@ function renderSafeties(){
       if(k==='hotfreezestat') latched.hotFreezestat=false;
       if(k==='highstatic') latched.highStatic=false;
       if(k==='aquastat') latched.aquastat=false;
+      if(k.startsWith('ol_')){ const parts=k.split('_'); const key=parts[1]; const id=parseInt(parts[2]); const arr=key==='supply'?sim.supplyFans:(key==='return'?sim.returnFans:sim.hotDeckFans); const f=arr.find(x=>x.id===id); if(f)f.fail=false; }
       if(k==='firealarm') manualSafety.fireAlarm=false;
       if(k==='smokedamper') manualSafety.smokeDamperFail=false;
       if(k==='door') manualSafety.doorOpen=false;
