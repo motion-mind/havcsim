@@ -253,7 +253,7 @@ function buildSchematicCore(){
   }
 
   if(config.ductType==='dual'){
-    const alignMap = { 'hotOaIntake':'oaIntake', 'hotMixbox':'mixbox', 'hotFilter':'filter', 'hotdeckfan':'supplyfan', 'hotdeck':'cooling', 'hotDamper':'coldDamper', 'hotdischarge':'discharge' };
+    const alignMap = { 'hotOaIntake':'oaIntake', 'hotMixbox':'mixbox', 'hotFilter':'filter', 'hotdeckfan':'supplyfan', 'hotdeck': config.coolingCoils==='dual' ? 'coil1' : 'cooling', 'hotDamper':'coldDamper', 'hotdischarge':'discharge' };
     hotItems.forEach(h => {
       const targetId = alignMap[h.id];
       if(targetId){ const c = items.find(x => x.id === targetId); if(c){ h.x = c.x; h.w = c.w; h.cx = c.cx; } }
