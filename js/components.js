@@ -413,9 +413,9 @@ function bubbleDown(cx, botY, tier, title, lines, accent, dx = 0, iconHtml){
   const bx = cx + dx;
   let html = '<line x1="'+cx+'" y1="'+botY+'" x2="'+bx+'" y2="'+by+'" stroke="'+BAS.lineSoft+'" stroke-width="0.75"/>'+
     '<rect x="'+(bx-bw/2)+'" y="'+by+'" width="'+bw+'" height="'+bh+'" rx="2" fill="'+BAS.bubbleFill+'" stroke="'+(accent||BAS.bubbleStroke)+'" stroke-width="1"/>';
-  if(iconHtml){ html += '<g transform="translate('+(bx - bw/2 + 4)+','+(by + 2)+') scale(0.45)">'+iconHtml+'</g>'; }
+  if(iconHtml){ html += '<g transform="translate('+(bx + 6)+','+(by + 2)+') scale(0.45)">'+iconHtml+'</g>'; }
   lines.forEach((l,i)=>{ 
-    const xOff = (i === 0 && iconHtml) ? 8 : 0;
+    const xOff = (i === 0 && iconHtml) ? 24 : 0;
     html += '<text x="'+(bx + xOff)+'" y="'+(by+10.5+i*10)+'" font-family="Arial, sans-serif" font-size="8" text-anchor="'+(xOff?'start':'middle')+'" fill="'+BAS.text+'" font-weight="'+(i===0?700:400)+'">'+l+'</text>';
   });
   html += '<title>'+title+'</title>';
