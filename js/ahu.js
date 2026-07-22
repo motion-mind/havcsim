@@ -227,6 +227,10 @@ function renderSoo(){
 
 function renderFanStatus(){
   const el = document.getElementById('fanStatusArea');
+  if(!el) return;
+  const key = JSON.stringify([sim.supplyFanPct, sim.supplyFans.map(f=>f.run+','+f.fail), sim.hotDeckFanPct, sim.hotDeckFans.map(f=>f.run+','+f.fail), sim.returnFanPct, sim.returnFans.map(f=>f.run+','+f.fail), sim.boosterPumpRun]);
+  if(el.dataset.prevKey === key) return;
+  el.dataset.prevKey = key;
   let html = '';
   function fanBlock(title, arr, pct, singleLabel){
     let inner = '<h3 style="font-size:11px;color:var(--text-dim);font-family:var(--mono);text-transform:uppercase;margin:0 0 8px;">'+title+' &mdash; '+fmt(pct,0)+'% Speed</h3>';
