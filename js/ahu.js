@@ -238,9 +238,9 @@ function renderFanStatus(){
     else { const cls = pct>0? 'run':'off'; inner += '<div class="fanwall"><div class="fan-unit '+cls+'"><div class="glyph">&#9881;</div><div class="lbl">'+singleLabel+'</div></div></div>'; }
     return inner;
   }
-  html += '<div>'+fanBlock((config.ductType==='dual'&&config.dualDuctIndependent)?'Cold Deck Fan':'Supply Fan', sim.supplyFans, sim.supplyFanPct, sim.supplyFanPct>0?'RUN':'OFF', 'supply')+'</div>';
-  if(config.ductType==='dual' && config.dualDuctIndependent) html += '<div>'+fanBlock('Hot Deck Fan', sim.hotDeckFans, sim.hotDeckFanPct, sim.hotDeckFanPct>0?'RUN':'OFF', 'hotdeck')+'</div>';
-  if(config.airSystem==='return' && config.returnFanCount > 0) html += '<div>'+fanBlock('Return Fan', sim.returnFans, sim.returnFanPct, sim.returnFanPct>0?'RUN':'OFF', 'return')+'</div>';
+  html += '<div style="border-bottom:1px solid var(--line-soft);padding-bottom:10px;margin-bottom:10px;">'+fanBlock((config.ductType==='dual'&&config.dualDuctIndependent)?'Cold Deck Fan':'Supply Fan', sim.supplyFans, sim.supplyFanPct, sim.supplyFanPct>0?'RUN':'OFF', 'supply')+'</div>';
+  if(config.ductType==='dual' && config.dualDuctIndependent) html += '<div style="border-bottom:1px solid var(--line-soft);padding-bottom:10px;margin-bottom:10px;">'+fanBlock('Hot Deck Fan', sim.hotDeckFans, sim.hotDeckFanPct, sim.hotDeckFanPct>0?'RUN':'OFF', 'hotdeck')+'</div>';
+  if(config.airSystem==='return' && config.returnFanCount > 0) html += '<div style="border-bottom:1px solid var(--line-soft);padding-bottom:10px;margin-bottom:10px;">'+fanBlock('Return Fan', sim.returnFans, sim.returnFanPct, sim.returnFanPct>0?'RUN':'OFF', 'return')+'</div>';
   if(config.preheat && config.preheatBoosterPump){
     html += '<div><h3 style="font-size:11px;color:var(--text-dim);font-family:var(--mono);text-transform:uppercase;margin:0 0 8px;">Preheat Booster Pump</h3><div class="fanwall"><div class="fan-unit '+(sim.boosterPumpRun?'run':'off')+'"><div class="glyph">&#9881;</div><div class="lbl">'+(sim.boosterPumpRun?'RUN':'OFF')+'</div></div></div></div>';
   }
