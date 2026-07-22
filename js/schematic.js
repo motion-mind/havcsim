@@ -104,17 +104,17 @@ function drawStation(it, ductY, ductH, laneFlip){
   } else if(it.kind==='fan'){
     if(it.id==='supplyfan'){
       const n = config.supplyFan==='wall'? config.supplyFanCount:1;
-      for(let i=0;i<n;i++){ const fx = n===1? cx : (it.x+22+i*28); html += '<g id="fanicon_supply_'+i+'" transform="translate('+fx+','+ductY+')">'+fanSupplyGfx('off')+'</g>'; }
+      for(let i=0;i<n;i++){ const row = i % 2; const col = Math.floor(i/2); const fx = n===1? cx : (it.x+22+col*28); const fy = n===1? ductY : (ductY + row*28); html += '<g id="fanicon_supply_'+i+'" transform="translate('+fx+','+fy+')">'+fanSupplyGfx('off')+'</g>'; }
       if(config.driveType==='vfd'){
         if(config.singleDrive || n===1){ html += '<g id="vfdIcon_supply" transform="translate('+(it.x+it.w+20)+','+outward(6)+') scale(0.8)">'+gfxWrap('vfd','','1','supply')+'</g>'; }
-        else { for(let i=0;i<n;i++){ const fx = it.x+22+i*28; html += '<g id="vfdIcon_supply_'+i+'" transform="translate('+(fx-10)+','+(ductY-45)+') scale(0.6)">'+gfxWrap('vfd','','1','supply_'+i)+'</g>'; } }
+        else { for(let i=0;i<n;i++){ const col = Math.floor(i/2); const fx = it.x+22+col*28; html += '<g id="vfdIcon_supply_'+i+'" transform="translate('+(fx-10)+','+(ductY-45)+') scale(0.6)">'+gfxWrap('vfd','','1','supply_'+i)+'</g>'; } }
       }
     } else if(it.id==='hotdeckfan'){
       const n = config.supplyFan==='wall'? config.supplyFanCount:1;
-      for(let i=0;i<n;i++){ const fx = n===1? cx : (it.x+22+i*28); html += '<g id="fanicon_hotdeck_'+i+'" transform="translate('+fx+','+ductY+')">'+fanSupplyGfx('off')+'</g>'; }
+      for(let i=0;i<n;i++){ const row = i % 2; const col = Math.floor(i/2); const fx = n===1? cx : (it.x+22+col*28); const fy = n===1? ductY : (ductY + row*28); html += '<g id="fanicon_hotdeck_'+i+'" transform="translate('+fx+','+fy+')">'+fanSupplyGfx('off')+'</g>'; }
       if(config.driveType==='vfd'){
         if(config.singleDrive || n===1){ html += '<g id="vfdIcon_hotdeck" transform="translate('+(it.x+it.w+20)+','+outward(6)+') scale(0.8)">'+gfxWrap('vfd','','1','hotdeckfan')+'</g>'; }
-        else { for(let i=0;i<n;i++){ const fx = it.x+22+i*28; html += '<g id="vfdIcon_hotdeck_'+i+'" transform="translate('+(fx-10)+','+(ductY-45)+') scale(0.6)">'+gfxWrap('vfd','','1','hotdeck_'+i)+'</g>'; } }
+        else { for(let i=0;i<n;i++){ const col = Math.floor(i/2); const fx = it.x+22+col*28; html += '<g id="vfdIcon_hotdeck_'+i+'" transform="translate('+(fx-10)+','+(ductY-45)+') scale(0.6)">'+gfxWrap('vfd','','1','hotdeck_'+i)+'</g>'; } }
       }
     }
     html += stationLabel(cx, labelY, shortDuctLabel(it.title));
@@ -402,7 +402,8 @@ function buildSchematicCore(){
       const rx0 = config.includeEa ? (exhaustX - 40) : (Math.min(riserX,hRiserX) - 28);
       const returnFanCount = config.returnFan==='wall'? config.returnFanCount:1;
       const fanCenter = Math.max(riserX,hRiserX)+110;
-      const fanBankHalfWidth = config.returnFan==='wall'? (((returnFanCount-1)*28)/2 + 35) : 35;
+      const retCols = Math.ceil(returnFanCount / 2);
+      const fanBankHalfWidth = config.returnFan==='wall'? (((retCols-1)*28)/2 + 35) : 35;
       const raSensorX = fanCenter + fanBankHalfWidth + 85;
       const rx1 = raSensorX + 55;
       // Return main: gaps in top (cold riser) and bottom (hot riser)
@@ -418,10 +419,10 @@ function buildSchematicCore(){
       s += arrowFlowLine(retJctR, ry, rx1, ry, 'rev', 'flow_returnMain', 'flow-rev');
       s += '<text x="'+((rx0+rx1)/2)+'" y="'+(ry+54)+'" font-family="Arial" font-size="9.5" text-anchor="middle" fill="'+BAS.textDim+'">'+pn('Return Air','RA').toUpperCase()+' — SERVES BOTH DECKS</text>';
       if(hasReturnFan){
-        for(let i=0;i<returnFanCount;i++){ const fx = returnFanCount===1? fanCenter : (Math.max(riserX,hRiserX)+90+i*28); s += '<g id="fanicon_return_'+i+'" transform="translate('+fx+','+ry+')">'+fanReturnGfx('off', null, true)+'</g>'; }
+        for(let i=0;i<returnFanCount;i++){ const row = i % 2; const col = Math.floor(i/2); const fx = returnFanCount===1? fanCenter : (Math.max(riserX,hRiserX)+90+col*28); const fy = returnFanCount===1? ry : (ry + row*28); s += '<g id="fanicon_return_'+i+'" transform="translate('+fx+','+fy+')">'+fanReturnGfx('off', null, true)+'</g>'; }
         if(config.driveType==='vfd'){
           if(config.singleDrive || returnFanCount===1){ s += '<g id="vfdIcon_return" transform="translate('+(fanCenter+34)+','+(ry-20)+') scale(0.8)">'+gfxWrap('vfd','','1','return')+'</g>'; }
-          else { for(let i=0;i<returnFanCount;i++){ const fx = Math.max(riserX,hRiserX)+90+i*28; s += '<g id="vfdIcon_return_'+i+'" transform="translate('+(fx-10)+','+(ry-45)+') scale(0.6)">'+gfxWrap('vfd','','1','return_'+i)+'</g>'; } }
+          else { for(let i=0;i<returnFanCount;i++){ const col = Math.floor(i/2); const fx = Math.max(riserX,hRiserX)+90+col*28; s += '<g id="vfdIcon_return_'+i+'" transform="translate('+(fx-10)+','+(ry-45)+') scale(0.6)">'+gfxWrap('vfd','','1','return_'+i)+'</g>'; } }
         }
         s += '<g id="readout_returnfan"></g>';
       }
@@ -440,7 +441,8 @@ function buildSchematicCore(){
       const rx0 = config.includeEa ? (exhaustX - 40) : (riserX - 28);
       const returnFanCount = config.returnFan==='wall'? config.returnFanCount:1;
       const fanCenter = riserX+110;
-      const fanBankHalfWidth = config.returnFan==='wall'? (((returnFanCount-1)*28)/2 + 35) : 35;
+      const retCols = Math.ceil(returnFanCount / 2);
+      const fanBankHalfWidth = config.returnFan==='wall'? (((retCols-1)*28)/2 + 35) : 35;
       const raSensorX = fanCenter + fanBankHalfWidth + 85;
       const rx1 = raSensorX + 55;
       // Return main: gap in top where cold riser connects
@@ -461,10 +463,10 @@ function buildSchematicCore(){
       const riserMidY = (riserTopY+riserBotY)/2;
       if(config.includeOa) s += '<g id="raDamperIcon_mixbox" transform="translate('+riserX+','+riserMidY+') rotate(90)">'+damperGfx(0,false)+'</g>';
       if(hasReturnFan){
-        for(let i=0;i<returnFanCount;i++){ const fx = returnFanCount===1? fanCenter : (riserX+90+i*28); s += '<g id="fanicon_return_'+i+'" transform="translate('+fx+','+ry+')">'+fanReturnGfx('off', null, true)+'</g>'; }
+        for(let i=0;i<returnFanCount;i++){ const row = i % 2; const col = Math.floor(i/2); const fx = returnFanCount===1? fanCenter : (riserX+90+col*28); const fy = returnFanCount===1? ry : (ry + row*28); s += '<g id="fanicon_return_'+i+'" transform="translate('+fx+','+fy+')">'+fanReturnGfx('off', null, true)+'</g>'; }
         if(config.driveType==='vfd'){
           if(config.singleDrive || returnFanCount===1){ s += '<g id="vfdIcon_return" transform="translate('+(fanCenter+34)+','+(ry-20)+') scale(0.8)">'+gfxWrap('vfd','','1','return')+'</g>'; }
-          else { for(let i=0;i<returnFanCount;i++){ const fx = riserX+90+i*28; s += '<g id="vfdIcon_return_'+i+'" transform="translate('+(fx-10)+','+(ry-45)+') scale(0.6)">'+gfxWrap('vfd','','1','return_'+i)+'</g>'; } }
+          else { for(let i=0;i<returnFanCount;i++){ const col = Math.floor(i/2); const fx = riserX+90+col*28; s += '<g id="vfdIcon_return_'+i+'" transform="translate('+(fx-10)+','+(ry-45)+') scale(0.6)">'+gfxWrap('vfd','','1','return_'+i)+'</g>'; } }
         }
         s += '<g id="readout_returnfan"></g>';
       }
