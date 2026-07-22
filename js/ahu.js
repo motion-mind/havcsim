@@ -234,7 +234,7 @@ function renderFanStatus(){
   let html = '';
   function fanBlock(title, arr, pct, singleLabel, fanKey){
     let inner = '<h3 style="font-size:11px;color:var(--text-dim);font-family:var(--mono);text-transform:uppercase;margin:0 0 8px;">'+title+' &mdash; '+fmt(pct,0)+'% Speed</h3>';
-    if(arr.length){ inner += '<div class="fanwall">'+arr.map(f=>{ const cls = f.fail? 'fail' : (f.run? 'run':'off'); return '<div class="fan-unit '+cls+'" style="position:relative;"><div class="glyph">&#9881;</div><div class="lbl">M'+f.id+' '+(f.fail?'FAIL':(f.run?'RUN':'OFF'))+'</div>'+(arr.length>1?'<button class="btn btn-xs '+(f.fail?'danger':'')+'" data-oltrip="'+fanKey+'_'+f.id+'" style="position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);padding:1px 4px;font-size:8px;line-height:1.2;min-width:0;">OL</button>':'')+'</div>'; }).join('')+'</div>'; }
+    if(arr.length){ inner += '<div class="fanwall">'+arr.map(f=>{ const cls = f.fail? 'fail' : (f.run? 'run':'off'); return '<div class="fan-unit '+cls+'" style="position:relative;"><div class="glyph">&#9881;</div><div class="lbl">M'+f.id+' '+(f.fail?'FAIL':(f.run?'RUN':'OFF'))+'</div><button class="btn btn-xs '+(f.fail?'danger':'')+'" data-oltrip="'+fanKey+'_'+f.id+'" style="position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);padding:1px 4px;font-size:8px;line-height:1.2;min-width:0;">OL</button></div>'; }).join('')+'</div>'; }
     else { const cls = pct>0? 'run':'off'; inner += '<div class="fanwall"><div class="fan-unit '+cls+'"><div class="glyph">&#9881;</div><div class="lbl">'+singleLabel+'</div></div></div>'; }
     return inner;
   }
