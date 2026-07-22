@@ -232,19 +232,29 @@ function renderFanStatus(){
   if(el.dataset.prevKey === key) return;
   el.dataset.prevKey = key;
   let html = '';
-  function fanBlock(title, arr, pct, singleLabel){
+  function fanBlock(title, arr, pct, singleLabel, fanKey){
     let inner = '<h3 style="font-size:11px;color:var(--text-dim);font-family:var(--mono);text-transform:uppercase;margin:0 0 8px;">'+title+' &mdash; '+fmt(pct,0)+'% Speed</h3>';
-    if(arr.length){ inner += '<div class="fanwall">'+arr.map(f=>{ const cls = f.fail? 'fail' : (f.run? 'run':'off'); return '<div class="fan-unit '+cls+'"><div class="glyph">&#9881;</div><div class="lbl">M'+f.id+' '+(f.fail?'FAIL':(f.run?'RUN':'OFF'))+'</div></div>'; }).join('')+'</div>'; }
+    if(arr.length){ inner += '<div class="fanwall">'+arr.map(f=>{ const cls = f.fail? 'fail' : (f.run? 'run':'off'); return '<div class="fan-unit '+cls+'" style="position:relative;"><div class="glyph">&#9881;</div><div class="lbl">M'+f.id+' '+(f.fail?'FAIL':(f.run?'RUN':'OFF'))+'</div>'+(arr.length>1?'<button class="btn btn-xs '+(f.fail?'danger':'')+'" data-oltrip="'+fanKey+'_'+f.id+'" style="position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);padding:1px 4px;font-size:8px;line-height:1.2;min-width:0;">OL</button>':'')+'</div>'; }).join('')+'</div>'; }
     else { const cls = pct>0? 'run':'off'; inner += '<div class="fanwall"><div class="fan-unit '+cls+'"><div class="glyph">&#9881;</div><div class="lbl">'+singleLabel+'</div></div></div>'; }
     return inner;
   }
-  html += '<div>'+fanBlock((config.ductType==='dual'&&config.dualDuctIndependent)?'Cold Deck Fan':'Supply Fan', sim.supplyFans, sim.supplyFanPct, sim.supplyFanPct>0?'RUN':'OFF')+'</div>';
-  if(config.ductType==='dual' && config.dualDuctIndependent) html += '<div>'+fanBlock('Hot Deck Fan', sim.hotDeckFans, sim.hotDeckFanPct, sim.hotDeckFanPct>0?'RUN':'OFF')+'</div>';
-  if(config.airSystem==='return' && config.returnFanCount > 0) html += '<div>'+fanBlock('Return Fan', sim.returnFans, sim.returnFanPct, sim.returnFanPct>0?'RUN':'OFF')+'</div>';
+  html += '<div>'+fanBlock((config.ductType==='dual'&&config.dualDuctIndependent)?'Cold Deck Fan':'Supply Fan', sim.supplyFans, sim.supplyFanPct, sim.supplyFanPct>0?'RUN':'OFF', 'supply')+'</div>';
+  if(config.ductType==='dual' && config.dualDuctIndependent) html += '<div>'+fanBlock('Hot Deck Fan', sim.hotDeckFans, sim.hotDeckFanPct, sim.hotDeckFanPct>0?'RUN':'OFF', 'hotdeck')+'</div>';
+  if(config.airSystem==='return' && config.returnFanCount > 0) html += '<div>'+fanBlock('Return Fan', sim.returnFans, sim.returnFanPct, sim.returnFanPct>0?'RUN':'OFF', 'return')+'</div>';
   if(config.preheat && config.preheatBoosterPump){
     html += '<div><h3 style="font-size:11px;color:var(--text-dim);font-family:var(--mono);text-transform:uppercase;margin:0 0 8px;">Preheat Booster Pump</h3><div class="fanwall"><div class="fan-unit '+(sim.boosterPumpRun?'run':'off')+'"><div class="glyph">&#9881;</div><div class="lbl">'+(sim.boosterPumpRun?'RUN':'OFF')+'</div></div></div></div>';
   }
   el.innerHTML = html;
+  el.querySelectorAll('button[data-oltrip]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const [key, idStr] = btn.dataset.oltrip.split('_');
+      const id = parseInt(idStr);
+      let arr = key === 'supply' ? sim.supplyFans : (key === 'return' ? sim.returnFans : sim.hotDeckFans);
+      const f = arr.find(x => x.id === id);
+      if(f){ f.fail = !f.fail; }
+    });
+  });
 }
 
 function renderSafeties(){
