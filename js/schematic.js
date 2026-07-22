@@ -392,7 +392,7 @@ function buildSchematicCore(){
       // Return main: gaps in top (cold riser) and bottom (hot riser)
       const retTopHoles  = [{from: riserX-riserW/2,  to: riserX+riserW/2}];
       const retBotHoles  = [{from: hRiserX-riserW/2, to: hRiserX+riserW/2}];
-      s += horizDuctSVG(rx0, ry-22, rx1-rx0, 44, retBotHoles, retTopHoles, false, true);
+      s += horizDuctSVG(rx0, ry-22, rx1-rx0, 44, retBotHoles, retTopHoles, config.includeEa, true);
       // Return main arrows: split at the riser junction.
       // Left of junction = exhaust section (only flows when EA damper open).
       // Right of junction = main return (flows whenever return fan runs).
@@ -429,7 +429,7 @@ function buildSchematicCore(){
       const rx1 = raSensorX + 55;
       // Return main: gap in top where cold riser connects
       const retTopHoles = [{from: riserX-riserW/2, to: riserX+riserW/2}];
-      s += horizDuctSVG(rx0, ry-22, rx1-rx0, 44, null, retTopHoles, false, true);
+      s += horizDuctSVG(rx0, ry-22, rx1-rx0, 44, null, retTopHoles, config.includeEa, true);
       // Return main arrows: split at the riser junction.
       // Left section (toward exhaust) only flows when EA damper is open.
       const retJctL = riserX;                          // centre of riser — exhaust arrows reach into the middle of the junction
