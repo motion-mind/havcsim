@@ -90,9 +90,10 @@ function drawStation(it, ductY, ductH, laneFlip){
       if(config.preheatBoosterPump){ html += '<g id="boosterPumpIcon" transform="translate('+(cx-26)+','+outward(26)+') scale(0.8)">'+pumpGfx('off')+'</g>'; }
       if(config.preheatAquastat){ html += '<g id="aquastatIcon" transform="translate('+(cx+26)+','+outward(26)+') scale(0.85)">'+lowLimitGfx(false)+'</g>'; }
     }
-    const sensorOffset = (it.id === 'cooling') ? 88 : ((it.id === 'preheat' || it.id === 'hotdeck') ? 36 : 72);
+    const sensorOffset = (it.id === 'cooling' || it.id === 'coil1' || it.id === 'coil2') ? 88 : ((it.id === 'preheat' || it.id === 'hotdeck') ? 36 : 72);
     html += '<g id="readout_'+it.id+'_lat"></g>';
-    const lbl = it.id==='preheat'?'PREHEAT COIL':it.id==='reheat'?'REHEAT COIL':it.id==='hotdeck'?'HOT DECK COIL':(config.coolingCoils==='dual'?'COOLING COILS 1 & 2':'COOLING COIL');
+    const coilLabels = { preheat:'PREHEAT COIL', reheat:'REHEAT COIL', hotdeck:'HOT DECK COIL', coil1:'COOLING COIL 1', coil2:'COOLING COIL 2' };
+    const lbl = coilLabels[it.id] || (config.coolingCoils==='dual'?'COOLING COILS 1 & 2':'COOLING COIL');
     html += stationLabel(cx, labelY, lbl);
   } else if(it.kind==='fan'){
     if(it.id==='supplyfan'){
@@ -209,7 +210,10 @@ function buildSchematicCore(){
   const taperW = 50;
   if(sharedDual){ x = forkX + taperW; currentAddY = coldLaneY; }
   const coldLaneStartIdx = items.length;
-  add('coil', config.coolingCoils==='dual'? 126 : 80, 'cooling', config.coolingCoils==='dual'?'Cooling Coils 1 & 2':'Cooling Coil');
+  if(config.coolingCoils==='dual'){
+    add('coil', 80, 'coil1', 'Cooling Coil 1');
+    add('coil', 80, 'coil2', 'Cooling Coil 2');
+  } else { add('coil', 80, 'cooling', 'Cooling Coil'); }
   if(config.ductType==='dual'){
     if(config.steamHumid) add('humid', 54, 'humid', 'Steam Humidifier');
     add('supplydamper', 50, 'coldDamper', 'Cold Deck Damper');
@@ -502,8 +506,8 @@ function updateSchematicReadouts(){
       const tier = 46;
       let lines = null, accent = null;
       if(it.id==='preheat'){ lines=['PHC VALVE', fmt(sim.preheatValve,0)+'%']; accent = sim.preheatValve>2? '#d78a2b':null; }
-      else if(it.id==='cooling'){
-        lines = config.coolingCoils==='dual'? ['CLG VALVES','C1 '+fmt(sim.coil1Valve,0)+'% / C2 '+fmt(sim.coil2Valve,0)+'%'] : ['CLG VALVE', fmt(sim.coil1Valve,0)+'%'];
+      else if(it.id==='cooling' || it.id==='coil1' || it.id==='coil2'){
+        lines = ['CLG VALVE', fmt(it.id==='coil2'?sim.coil2Valve:sim.coil1Valve,0)+'%'];
         accent='#2b6cb0';
       }
       else if(it.id==='reheat'){ lines=['RHT VALVE', fmt(sim.reheatValve,0)+'%']; accent = sim.reheatValve>2? '#d78a2b':null; }
@@ -513,7 +517,7 @@ function updateSchematicReadouts(){
       const latG = document.getElementById('readout_'+it.id+'_lat');
       if(latG){
         let sensorOffset = 72;
-        if(it.id === 'cooling') { sensorOffset = (config.ductType === 'dual' && config.dualDuctIndependent) ? 36 : 88; }
+        if(it.id === 'cooling' || it.id === 'coil1' || it.id === 'coil2') { sensorOffset = (config.ductType === 'dual' && config.dualDuctIndependent) ? 36 : 88; }
         else if(it.id === 'preheat') { sensorOffset = 36; }
         else if(it.id === 'hotdeck') { sensorOffset = 36; }
         const latX = it.cx + sensorOffset;
@@ -522,8 +526,8 @@ function updateSchematicReadouts(){
         const latEdgeY = rowY + ductH/2;
         let latLines = null, latAccent = null;
         if(it.id==='preheat') latLines=['PHC-LAT', fmt(sim.preheatLvg,1)+'\u00b0F'];
-        else if(it.id==='cooling'){
-          const clgLvg = config.coolingCoils==='dual'? sim.coil2Lvg : sim.coil1Lvg;
+        else if(it.id==='cooling' || it.id==='coil1' || it.id==='coil2'){
+          const clgLvg = it.id==='coil2' ? sim.coil2Lvg : sim.coil1Lvg;
           if(config.ductType==='dual' && config.dualDuctIndependent){ latLines=['CLG-LAT', fmt(clgLvg,1)+'\u00b0F']; latAccent='#2b6cb0'; }
         }
         else if(it.id==='reheat') { latLines=['RHT-LAT', fmt(sim.satDisplayTemp,1)+'\u00b0F']; latAccent = sim.reheatValve>2? '#d78a2b':null; }
@@ -602,7 +606,11 @@ function updateSchematicReadouts(){
 
   if(config.preheat){ const el = document.getElementById('coilIcon_preheat'); if(el) el.innerHTML = heatingCoilGfx(sim.preheatValve, activeFaults.preheatValveStuck!==undefined || activeFaults.preheatNoFlow, 'preheat'); }
   const coolEl = document.getElementById('coilIcon_cooling');
-  if(coolEl) coolEl.innerHTML = coolingCoilGfx(config.coolingCoils==='dual'? Math.max(sim.coil1Valve,sim.coil2Valve): sim.coil1Valve, activeFaults.coil1ValveStuck!==undefined || activeFaults.coil1NoFlow || activeFaults.coil2ValveStuck!==undefined);
+  if(coolEl) coolEl.innerHTML = coolingCoilGfx(sim.coil1Valve, activeFaults.coil1ValveStuck!==undefined || activeFaults.coil1NoFlow);
+  const coil1El = document.getElementById('coilIcon_coil1');
+  if(coil1El) coil1El.innerHTML = coolingCoilGfx(sim.coil1Valve, activeFaults.coil1ValveStuck!==undefined || activeFaults.coil1NoFlow);
+  const coil2El = document.getElementById('coilIcon_coil2');
+  if(coil2El) coil2El.innerHTML = coolingCoilGfx(sim.coil2Valve, activeFaults.coil2ValveStuck!==undefined || activeFaults.coil2NoFlow);
   if(config.ductType==='dual'){ const hdEl = document.getElementById('coilIcon_hotdeck'); if(hdEl) hdEl.innerHTML = heatingCoilGfx(sim.hotDeckValve, activeFaults.hotDeckValveStuck!==undefined, 'hotdeck'); }
   else if(config.reheat){ const rhEl = document.getElementById('coilIcon_reheat'); if(rhEl) rhEl.innerHTML = heatingCoilGfx(sim.reheatValve, activeFaults.reheatValveStuck!==undefined || activeFaults.reheatNoFlow, 'reheat'); }
   if(config.ductType!=='dual' && config.steamHumid){ const humEl = document.getElementById('humidIcon'); if(humEl) humEl.innerHTML = humidifierGfx(sim.humidValve>2, activeFaults.humidValveStuck!==undefined || activeFaults.humidNoSteam); }
