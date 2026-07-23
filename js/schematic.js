@@ -709,7 +709,7 @@ function enablePanZoom(){
   const svg = document.getElementById('schematicSvg');
   if(!svg) return;
   const origVb = svg.getAttribute('viewBox');
-  svg.setAttribute('data-orig-viewbox', origVb);
+  if(!svg.getAttribute('data-orig-viewbox')) svg.setAttribute('data-orig-viewbox', origVb);
   let vb = origVb.split(' ').map(Number);
   let isPanning = false, startX, startY, startVb;
   let lastDist = 0;
@@ -717,6 +717,36 @@ function enablePanZoom(){
   function setViewBox(vbArr){
     vb = vbArr;
     svg.setAttribute('viewBox', vb.join(' '));
+  }
+
+  function zoomBy(scale){
+    const rect = svg.getBoundingClientRect();
+    const fx = 0.5, fy = 0.5;
+    const nw = Math.max(100, vb[2] * scale);
+    const nh = Math.max(100, vb[3] * scale);
+    const nx = vb[0] + (vb[2] - nw) * fx;
+    const ny = vb[1] + (vb[3] - nh) * fy;
+    setViewBox([nx, ny, nw, nh]);
+  }
+
+  const btnIn = document.getElementById('btnZoomIn');
+  if(btnIn && !btnIn._bound){ btnIn._bound = true; btnIn.addEventListener('click', () => zoomBy(1/1.25)); }
+  const btnOut = document.getElementById('btnZoomOut');
+  if(btnOut && !btnOut._bound){ btnOut._bound = true; btnOut.addEventListener('click', () => zoomBy(1.25)); }
+  const btnReset = document.getElementById('btnZoomReset');
+  if(btnReset && !btnReset._bound){
+    btnReset._bound = true;
+    btnReset.addEventListener('click', () => {
+      const orig = svg.getAttribute('data-orig-viewbox');
+      if(orig) setViewBox(orig.split(' ').map(Number));
+    });
+  }
+  const btnMax = document.getElementById('btnMaximize');
+  if(btnMax && !btnMax._bound){
+    btnMax._bound = true;
+    btnMax.addEventListener('click', () => {
+      if(typeof openSchematicModal === 'function') openSchematicModal();
+    });
   }
 
   svg.addEventListener('wheel', e => {

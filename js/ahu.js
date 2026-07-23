@@ -8,6 +8,7 @@ function readingCard(label, val, unit, alarm, fullLabel){
 
 function renderFlowReadings(){
   const el = document.getElementById('flowReadings');
+  if(!el) return;
   let html = '';
   html += readingCard(
     config.ductType==='dual' && config.dualDuctIndependent ? 'Cold Deck CFM' : 'Supply Air CFM',
@@ -31,6 +32,7 @@ function renderFlowReadings(){
 
 function renderTempReadings(){
   const el = document.getElementById('tempReadings');
+  if(!el) return;
   let html = '';
   const indep = config.ductType==='dual' && config.dualDuctIndependent;
   if(config.includeOa) html += readingCard('Outside Air Temp', fmt(sim.oatDisplayTemp,1), '\u00b0F', false);
@@ -293,49 +295,76 @@ function renderSafeties(){
   });
   const lockoutMsg = document.getElementById('lockoutMsg');
   const tripped = latched.freezestat||latched.highStatic||latched.aquastat||latched.hotFreezestat||manualSafety.fireAlarm||manualSafety.smokeDamperFail||manualSafety.doorOpen;
-  lockoutMsg.textContent = tripped? '\u26a0 Safety lockout active — unit will not run until safeties are cleared/reset above.' : '';
-  lockoutMsg.style.color = tripped? 'var(--red)':'var(--text-dim)';
+  if(lockoutMsg){
+    lockoutMsg.textContent = tripped? '\u26a0 Safety lockout active — unit will not run until safeties are cleared/reset above.' : '';
+    lockoutMsg.style.color = tripped? 'var(--red)':'var(--text-dim)';
+  }
 }
 
 function setEnabledUI(on){
   sim.enabled = on;
-  document.getElementById('enableToggle').classList.toggle('on', on);
-  document.getElementById('enableCard').classList.toggle('on', on);
-  document.getElementById('enableLabel').textContent = on? 'ENABLED':'DISABLED';
+  const topBtn = document.getElementById('topEnableBtn');
+  const enDot = document.getElementById('topEnableDot');
+  const enTxt = document.getElementById('topEnableText');
+  const mobDot = document.getElementById('mobEnableDot');
+  const mobTxt = document.getElementById('mobEnableText');
+  const tripped = latched.freezestat||latched.highStatic||latched.aquastat||latched.hotFreezestat||manualSafety.fireAlarm||manualSafety.smokeDamperFail||manualSafety.doorOpen;
+  const statusCls = (on && tripped) ? 'dot trip' : (on ? 'dot on' : 'dot');
+  const statusStr = (on && tripped) ? 'SAFETY TRIP' : (on ? 'RUNNING' : 'DISABLED');
+  const btnCls = (on && tripped) ? 'status-chip-btn trip' : (on ? 'status-chip-btn running' : 'status-chip-btn');
+
+  if(topBtn) topBtn.className = btnCls;
+  if(enDot){ enDot.className = statusCls; enTxt.textContent = statusStr; }
+  if(mobDot){ mobDot.className = statusCls; mobTxt.textContent = statusStr; }
 }
 
 function setEconomizerUI(on){
   if(!sim) return;
   sim.economizerEnabled = on;
-  const toggle = document.getElementById('econToggle');
-  const card = document.getElementById('econCard');
-  const label = document.getElementById('econLabel');
-  if(toggle) toggle.classList.toggle('on', on);
-  if(card) card.classList.toggle('on', on);
-  if(label) label.textContent = on? 'ENABLED':'DISABLED';
+  const btn = document.getElementById('sideEconBtn');
+  const txt = document.getElementById('econBtnText');
+  const dot = document.getElementById('econActiveDot');
+  const avail = !!(config.includeOa && config.airSystem === 'return');
+  if(btn){
+    btn.disabled = !avail;
+    btn.classList.toggle('on', avail && on);
+    btn.classList.toggle('disabled', !avail);
+  }
+  if(txt) txt.textContent = !avail ? 'ECON: N/A' : (on ? 'ECON: ON' : 'ECON: OFF');
+  if(dot) dot.classList.toggle('on', avail && sim.economizerActive);
 }
 
 function setDehumidUI(on){
   if(!sim) return;
   sim.dehumidEnabled = on;
   config.dehumidEnabled = on;
-  const toggle = document.getElementById('dehumidToggle');
-  const card = document.getElementById('dehumidCard');
-  const label = document.getElementById('dehumidLabel');
-  if(toggle) toggle.classList.toggle('on', on);
-  if(card) card.classList.toggle('on', on);
-  if(label) label.textContent = on? 'ENABLED':'DISABLED';
+  const btn = document.getElementById('sideDehumidBtn');
+  const txt = document.getElementById('dehumidBtnText');
+  const dot = document.getElementById('dehumidActiveDot');
+  const avail = config.coolingCoils !== 'none';
+  if(btn){
+    btn.disabled = !avail;
+    btn.classList.toggle('on', avail && on);
+    btn.classList.toggle('disabled', !avail);
+  }
+  if(txt) txt.textContent = !avail ? 'DEHUM: N/A' : (on ? 'DEHUM: ON' : 'DEHUM: OFF');
+  if(dot) dot.classList.toggle('warn', avail && sim.dehumidActive);
 }
 
 function setHumidUI(on){
   if(!sim) return;
   sim.humidEnabled = on;
-  const toggle = document.getElementById('humidToggle');
-  const card = document.getElementById('humidCard');
-  const label = document.getElementById('humidLabel');
-  if(toggle) toggle.classList.toggle('on', on);
-  if(card) card.classList.toggle('on', on);
-  if(label) label.textContent = on? 'ENABLED':'DISABLED';
+  const btn = document.getElementById('sideHumidBtn');
+  const txt = document.getElementById('humidBtnText');
+  const dot = document.getElementById('humidActiveDot');
+  const avail = !!config.steamHumid;
+  if(btn){
+    btn.disabled = !avail;
+    btn.classList.toggle('on', avail && on);
+    btn.classList.toggle('disabled', !avail);
+  }
+  if(txt) txt.textContent = !avail ? 'HUMID: N/A' : (on ? 'HUMID: ON' : 'HUMID: OFF');
+  if(dot) dot.classList.toggle('blue', avail && sim.humidActive);
 }
 
 function syncOatReadout(){ document.getElementById('oatReadout').textContent = fmt(sim.oatTarget,1)+' \u00b0F'; }
@@ -376,10 +405,27 @@ function renderAhuFrame(){
   renderSafeties();
   const enDot = document.getElementById('topEnableDot');
   const enTxt = document.getElementById('topEnableText');
+  const mobDot = document.getElementById('mobEnableDot');
+  const mobTxt = document.getElementById('mobEnableText');
+  const mobOat = document.getElementById('mobOatText');
+  const mobFault = document.getElementById('mobFaultText');
+
   const tripped = latched.freezestat||latched.highStatic||latched.aquastat||latched.hotFreezestat||manualSafety.fireAlarm||manualSafety.smokeDamperFail||manualSafety.doorOpen;
-  if(sim.enabled && tripped){ enDot.className='dot trip'; enTxt.textContent='LOCKED OUT'; }
-  else if(sim.enabled){ enDot.className='dot on'; enTxt.textContent='RUNNING'; }
-  else { enDot.className='dot'; enTxt.textContent='DISABLED'; }
+  const statusCls = (sim.enabled && tripped) ? 'dot trip' : (sim.enabled ? 'dot on' : 'dot');
+  const statusStr = (sim.enabled && tripped) ? 'SAFETY TRIP' : (sim.enabled ? 'RUNNING' : 'DISABLED');
+  const btnCls = (sim.enabled && tripped) ? 'status-chip-btn trip' : (sim.enabled ? 'status-chip-btn running' : 'status-chip-btn');
+
+  const topBtn = document.getElementById('topEnableBtn');
+  if(topBtn) topBtn.className = btnCls;
+
+  if(enDot){ enDot.className = statusCls; enTxt.textContent = statusStr; }
+  if(mobDot){ mobDot.className = statusCls; mobTxt.textContent = statusStr; }
+  if(mobOat){ mobOat.textContent = fmt(sim.oatDisplayTemp || sim.oat || 55, 1) + '°F'; }
+  if(mobFault){
+    const activeCount = (currentFaultDesc ? currentFaultDesc.length : 0) + (tripped ? 1 : 0);
+    mobFault.textContent = activeCount + (activeCount === 1 ? ' Fault' : ' Faults');
+    mobFault.style.color = activeCount > 0 ? 'var(--amber)' : 'var(--green)';
+  }
   const econDot = document.getElementById('econActiveDot'); if(econDot) econDot.classList.toggle('on', sim.economizerActive);
   const dehumidDot = document.getElementById('dehumidActiveDot'); if(dehumidDot) dehumidDot.classList.toggle('warn', sim.dehumidActive);
   const humidDot = document.getElementById('humidActiveDot'); if(humidDot) humidDot.classList.toggle('blue', sim.humidActive);

@@ -3,8 +3,10 @@
 window.onerror = function(message, source, lineno, colno, error) {
   const errDiv = document.createElement('div');
   errDiv.style.cssText = "position:fixed;top:0;left:0;width:100%;background:#fee2e2;color:#991b1b;border-bottom:3px solid #ef4444;padding:15px;z-index:999999;font-family:monospace;font-size:14px;";
-  errDiv.innerHTML = "<b>FATAL ERROR IN AHU SIMULATOR:</b><br/>" + message + "<br/>At line: " + lineno + ":" + colno + "<br/>Source: " + source;
-  document.body.appendChild(errDiv);
+  const stackStr = (error && error.stack) ? "<br/><pre style='white-space:pre-wrap;font-size:11px;margin-top:6px;'>" + error.stack + "</pre>" : "";
+  errDiv.innerHTML = "<b>FATAL ERROR IN AHU SIMULATOR:</b><br/>" + message + "<br/>At line: " + lineno + ":" + colno + "<br/>Source: " + source + stackStr;
+  if(document.body) document.body.appendChild(errDiv);
+  else window.addEventListener('DOMContentLoaded', () => document.body.appendChild(errDiv));
   return false;
 };
 

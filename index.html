@@ -9,7 +9,7 @@
 <body>
 <div class="app-layout">
 <div class="sidebar">
-  <div class="status-chip"><span class="dot" id="topEnableDot"></span><span id="topEnableText">DISABLED</span></div>
+  <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle light / dark mode">LIGHT MODE</button>
   <div class="tabs">
     <button class="tab-btn active" data-tab="setup">Setup</button>
     <button class="tab-btn" data-tab="ahu">AHU-1</button>
@@ -23,7 +23,12 @@
     <button data-speed="5">5x</button>
     <button data-speed="10">10x</button>
   </div>
-  <button class="theme-toggle-btn" id="themeToggleBtn" title="Toggle light / dark mode">&#9788;</button>
+  <div class="sidebar-controls" style="width:100%;display:flex;flex-direction:column;gap:6px;">
+    <button class="status-chip-btn" id="topEnableBtn" title="Click to Toggle Unit or Reset Safeties"><span class="dot" id="topEnableDot"></span><span id="topEnableText">DISABLED</span></button>
+    <button class="sidebar-ctrl-btn" id="sideEconBtn" title="Toggle Economizer"><span class="dot" id="econActiveDot"></span><span id="econBtnText">ECON: ON</span></button>
+    <button class="sidebar-ctrl-btn" id="sideDehumidBtn" title="Toggle Dehumidification"><span class="dot" id="dehumidActiveDot"></span><span id="dehumidBtnText">DEHUM: ON</span></button>
+    <button class="sidebar-ctrl-btn" id="sideHumidBtn" title="Toggle Humidification"><span class="dot" id="humidActiveDot"></span><span id="humidBtnText">HUMID: ON</span></button>
+  </div>
 </div>
 <div class="main-area">
 
@@ -31,8 +36,9 @@
   <div class="brand">
     <div class="mark">AHU</div>
     <div style="text-align:center;">
-      <h1>Air Handling Unit Training Simulator <span id="versionTag">V1.8</span></h1>
+      <h1>Air Handling Unit Training Simulator <span id="versionTag">V1.85</span></h1>
       <div class="sub" id="unitSubtitle">UNCONFIGURED &middot; go to Setup</div>
+      <div class="mobile-status-summary" id="mobileStatusSummary"><span><span class="dot" id="mobEnableDot"></span><span id="mobEnableText">DISABLED</span></span> &middot; <span id="mobOatText">55.0&deg;F</span> &middot; <span id="mobFaultText" style="color:var(--green);">0 Active Faults</span></div>
       <div style="font-size:10px;color:var(--text-faint);margin-top:4px;line-height:1.4;">Simplified training model - all setpoints, PID control loops, and psychrometrics run locally in your browser. Not a substitute for manufacturer sequences of operation.</div>
     </div>
   </div>
@@ -105,51 +111,17 @@
   </div>
 
   <div class="panel">
-    <h2 style="display:flex;align-items:center;gap:8px;">System Schematic <span id="schemLegend" style="text-transform:none;font-weight:400;color:var(--text-faint);">live airflow &amp; temperatures</span>
-      <span style="margin-left:auto;font-size:10px;color:var(--text-faint);font-family:var(--mono);letter-spacing:.05em;">CLICK HERE TO OPEN IN A NEW WINDOW</span>
-      <button id="btnPopOut" title="Pop out schematic" style="background:none;border:1px solid var(--line);border-radius:4px;color:var(--text-dim);cursor:pointer;font-size:14px;padding:2px 8px;line-height:1;">&#x2197;</button>
+    <h2>
+      <span style="display:flex;align-items:center;gap:6px;">System Schematic <span id="schemLegend" style="text-transform:none;font-weight:400;color:var(--text-faint);">live airflow &amp; temps</span></span>
+      <div class="schem-toolbar">
+        <button class="schem-btn" id="btnZoomIn" title="Zoom In">+</button>
+        <button class="schem-btn" id="btnZoomOut" title="Zoom Out">-</button>
+        <button class="schem-btn" id="btnZoomReset" title="Reset View">1:1</button>
+        <button class="schem-btn" id="btnMaximize" title="Fullscreen / Expand">⛶</button>
+        <button class="schem-btn" id="btnPopOut" title="Pop out into new window">&#x2197;</button>
+      </div>
     </h2>
-    <div class="ahu-header-row">
-      <div class="ahu-id-box">
-        <div class="ahu-id-title">AHU-1</div>
-        <div class="ahu-id-sub" id="ahuIdSub">RETURN AIR SYSTEM</div>
-      </div>
-      <div class="enable-card" id="enableCard">
-        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);font-family:var(--mono);">Unit Enable</div>
-        <div class="toggle-wrap">
-          <div class="toggle" id="enableToggle"><div class="knob"></div></div>
-          <span id="enableLabel" class="enable-status">DISABLED</span>
-        </div>
-      </div>
-      <div class="enable-card" id="econCard">
-        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);font-family:var(--mono);">Economizer</div>
-        <div class="toggle-wrap">
-          <span class="dot" id="econActiveDot" style="width:9px;height:9px;"></span>
-          <div class="toggle" id="econToggle"><div class="knob"></div></div>
-          <span id="econLabel" class="enable-status">ENABLED</span>
-        </div>
-      </div>
-      <div class="enable-card" id="dehumidCard">
-        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);font-family:var(--mono);">Dehumidification</div>
-        <div class="toggle-wrap">
-          <span class="dot" id="dehumidActiveDot" style="width:9px;height:9px;"></span>
-          <div class="toggle" id="dehumidToggle"><div class="knob"></div></div>
-          <span id="dehumidLabel" class="enable-status">ENABLED</span>
-        </div>
-      </div>
-      <div class="enable-card" id="humidCard" style="display:none;">
-        <div style="font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-dim);font-family:var(--mono);">Humidification</div>
-        <div class="toggle-wrap">
-          <span class="dot" id="humidActiveDot" style="width:9px;height:9px;"></span>
-          <div class="toggle" id="humidToggle"><div class="knob"></div></div>
-          <span id="humidLabel" class="enable-status">ENABLED</span>
-        </div>
-      </div>
-      <div>
-        <button class="btn danger" id="btnResetSafeties" style="height:48px;padding:0 16px;display:inline-flex;align-items:center;justify-content:center;margin:0;">Reset Latched Safeties</button>
-        <div style="margin-top:8px;font-family:var(--mono);font-size:12px;color:var(--text-dim);max-width:260px;" id="lockoutMsg"></div>
-      </div>
-    </div>
+
     <div class="schematic-wrap" id="schemContainer"><svg id="schematicSvg" viewBox="0 0 1400 380"></svg></div>
 
   </div>
@@ -314,7 +286,7 @@
 </div>
 
 <div class="tabpanel" id="tab-ef">
-  <div class="grid g2" style="grid-template-columns: 3fr 2fr; gap: 20px;">
+  <div class="grid ef-grid">
     <div class="panel" style="display:flex; flex-direction:column; align-items:center; justify-content:center;">
       <h2>Exhaust Fan System EF-1</h2>
       <div id="efGraphicContainer" style="width:100%; max-width:600px; background:var(--panel-inset); border:1px solid var(--line-soft); border-radius:6px; padding:15px; box-sizing:border-box;">
@@ -394,6 +366,23 @@
   </div>
 </div>
 </div>
+
+<!-- Schematic Fullscreen Modal Overlay -->
+<div class="schem-modal-overlay" id="schemModal">
+  <div class="schem-modal-content">
+    <div class="schem-modal-header">
+      <span>AHU-1 SYSTEM SCHEMATIC &mdash; EXPANDED VIEW</span>
+      <div class="schem-toolbar">
+        <button class="schem-btn" id="modalZoomIn" title="Zoom In">+</button>
+        <button class="schem-btn" id="modalZoomOut" title="Zoom Out">-</button>
+        <button class="schem-btn" id="modalZoomReset" title="Reset View">1:1</button>
+        <button class="schem-btn" id="modalClose" title="Close Fullscreen">&times;</button>
+      </div>
+    </div>
+    <div class="schem-modal-body" id="modalSchemContainer"></div>
+  </div>
+</div>
+
 <script src="js/core.js"></script>
 <script src="js/setup.js"></script>
 <script src="js/simulation.js"></script>

@@ -253,6 +253,21 @@ function renderTerminalBoard(){
   });
   el.innerHTML = html;
   el.querySelectorAll('.terminal').forEach(d=>{
+    let touchTimer = null;
+    d.addEventListener('touchstart', (e)=>{
+      touchTimer = setTimeout(()=>{
+        touchTimer = null;
+        if(meterDamaged) return;
+        const id = d.dataset.term;
+        if(disconnectedTerminals.has(id)) disconnectedTerminals.delete(id);
+        else disconnectedTerminals.add(id);
+        renderTerminalBoard();
+        refreshMeter();
+      }, 500);
+    }, {passive: true});
+    d.addEventListener('touchend', ()=>{ if(touchTimer){ clearTimeout(touchTimer); touchTimer = null; } });
+    d.addEventListener('touchmove', ()=>{ if(touchTimer){ clearTimeout(touchTimer); touchTimer = null; } });
+
     d.addEventListener('click', ()=>{
       if(meterDamaged) return;
       const t = terminals.find(x=>x.id===d.dataset.term);
@@ -301,6 +316,21 @@ function renderVavTerminalBoard(){
   });
   el.innerHTML = html;
   el.querySelectorAll('.terminal').forEach(d=>{
+    let vavTouchTimer = null;
+    d.addEventListener('touchstart', (e)=>{
+      vavTouchTimer = setTimeout(()=>{
+        vavTouchTimer = null;
+        if(vavMeterDamaged) return;
+        const id = d.dataset.term;
+        if(disconnectedVavTerminals.has(id)) disconnectedVavTerminals.delete(id);
+        else disconnectedVavTerminals.add(id);
+        renderVavTerminalBoard();
+        refreshVavMeter();
+      }, 500);
+    }, {passive: true});
+    d.addEventListener('touchend', ()=>{ if(vavTouchTimer){ clearTimeout(vavTouchTimer); vavTouchTimer = null; } });
+    d.addEventListener('touchmove', ()=>{ if(vavTouchTimer){ clearTimeout(vavTouchTimer); vavTouchTimer = null; } });
+
     d.addEventListener('click', ()=>{
       if(vavMeterDamaged) return;
       const t = vavTerminals.find(x=>x.id===d.dataset.term);

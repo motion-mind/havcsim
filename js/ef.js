@@ -20,19 +20,19 @@ function renderExhaustFanTab(){
     else { systemStatusVal.textContent = 'OFF'; systemStatusVal.style.color = 'var(--text-faint)'; }
   }
 
-  document.getElementById('efDprA').textContent = fmt(ef.fanA.damperPos, 0) + '%';
-  document.getElementById('efDprB').textContent = fmt(ef.fanB.damperPos, 0) + '%';
-  document.getElementById('efSwA').textContent = ef.fanA.endSwitch ? 'YES' : 'NO';
-  document.getElementById('efSwB').textContent = ef.fanB.endSwitch ? 'YES' : 'NO';
-  document.getElementById('efRunA').textContent = ef.fanA.run ? 'RUN' : 'OFF';
-  document.getElementById('efRunB').textContent = ef.fanB.run ? 'RUN' : 'OFF';
-  document.getElementById('efFltA').textContent = ef.fanA.fail ? 'FAULT' : 'OK';
-  document.getElementById('efFltB').textContent = ef.fanB.fail ? 'FAULT' : 'OK';
+  const dprA = document.getElementById('efDprA'); if(dprA) dprA.textContent = fmt(ef.fanA.damperPos, 0) + '%';
+  const dprB = document.getElementById('efDprB'); if(dprB) dprB.textContent = fmt(ef.fanB.damperPos, 0) + '%';
+  const swA = document.getElementById('efSwA'); if(swA) swA.textContent = ef.fanA.endSwitch ? 'YES' : 'NO';
+  const swB = document.getElementById('efSwB'); if(swB) swB.textContent = ef.fanB.endSwitch ? 'YES' : 'NO';
+  const runA = document.getElementById('efRunA'); if(runA) runA.textContent = ef.fanA.run ? 'RUN' : 'OFF';
+  const runB = document.getElementById('efRunB'); if(runB) runB.textContent = ef.fanB.run ? 'RUN' : 'OFF';
+  const fltA = document.getElementById('efFltA'); if(fltA) fltA.textContent = ef.fanA.fail ? 'FAULT' : 'OK';
+  const fltB = document.getElementById('efFltB'); if(fltB) fltB.textContent = ef.fanB.fail ? 'FAULT' : 'OK';
 
-  document.getElementById('btnToggleFltMotorA').classList.toggle('danger', ef.fanA.fail);
-  document.getElementById('btnToggleFltMotorB').classList.toggle('danger', ef.fanB.fail);
-  document.getElementById('btnToggleFltDprA').classList.toggle('danger', !!activeFaults.efDprAFail);
-  document.getElementById('btnToggleFltDprB').classList.toggle('danger', !!activeFaults.efDprBFail);
+  const ma = document.getElementById('btnToggleFltMotorA'); if(ma) ma.classList.toggle('danger', ef.fanA.fail);
+  const mb = document.getElementById('btnToggleFltMotorB'); if(mb) mb.classList.toggle('danger', ef.fanB.fail);
+  const da = document.getElementById('btnToggleFltDprA'); if(da) da.classList.toggle('danger', !!activeFaults.efDprAFail);
+  const db = document.getElementById('btnToggleFltDprB'); if(db) db.classList.toggle('danger', !!activeFaults.efDprBFail);
 
   const activeColor = 'var(--green)';
   const flowColor = 'var(--cyan)';

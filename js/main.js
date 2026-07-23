@@ -29,25 +29,168 @@ function syncSvgNodes(src, tgt){
   while(si < src.childNodes.length){ tgt.appendChild(src.childNodes[si].cloneNode(true)); si++; }
 }
 
+/* ============================================================
+   IN-PAGE FULLSCREEN SCHEMATIC MODAL
+   ============================================================ */
+let schematicModalInterval = null;
+
+function openSchematicModal(){
+  const modal = document.getElementById('schemModal');
+  const container = document.getElementById('modalSchemContainer');
+  const srcSvg = document.getElementById('schematicSvg');
+  if(!modal || !container || !srcSvg) return;
+
+  container.innerHTML = '';
+  const clone = srcSvg.cloneNode(true);
+  clone.id = 'modalSchematicSvg';
+  container.appendChild(clone);
+  modal.classList.add('active');
+
+  enableModalPanZoom(clone);
+
+  if(schematicModalInterval) clearInterval(schematicModalInterval);
+  schematicModalInterval = setInterval(() => {
+    const src = document.getElementById('schematicSvg');
+    const tgt = document.getElementById('modalSchematicSvg');
+    if(!modal.classList.contains('active')){
+      clearInterval(schematicModalInterval);
+      schematicModalInterval = null;
+      return;
+    }
+    if(src && tgt) syncSvgNodes(src, tgt);
+  }, 250);
+}
+
+function closeSchematicModal(){
+  const modal = document.getElementById('schemModal');
+  if(modal) modal.classList.remove('active');
+  if(schematicModalInterval){
+    clearInterval(schematicModalInterval);
+    schematicModalInterval = null;
+  }
+}
+
+function enableModalPanZoom(svg){
+  if(!svg) return;
+  const origVb = svg.getAttribute('viewBox');
+  if(!svg.getAttribute('data-orig-viewbox')) svg.setAttribute('data-orig-viewbox', origVb);
+  let vb = origVb.split(' ').map(Number);
+  let isPanning = false, startX, startY, startVb;
+  let lastDist = 0;
+
+  function setViewBox(vbArr){
+    vb = vbArr;
+    svg.setAttribute('viewBox', vb.join(' '));
+  }
+
+  function zoomBy(scale){
+    const nw = Math.max(100, vb[2] * scale);
+    const nh = Math.max(100, vb[3] * scale);
+    const nx = vb[0] + (vb[2] - nw) * 0.5;
+    const ny = vb[1] + (vb[3] - nh) * 0.5;
+    setViewBox([nx, ny, nw, nh]);
+  }
+
+  const btnIn = document.getElementById('modalZoomIn');
+  if(btnIn){ btnIn.onclick = () => zoomBy(1/1.25); }
+  const btnOut = document.getElementById('modalZoomOut');
+  if(btnOut){ btnOut.onclick = () => zoomBy(1.25); }
+  const btnReset = document.getElementById('modalZoomReset');
+  if(btnReset){ btnReset.onclick = () => { if(origVb) setViewBox(origVb.split(' ').map(Number)); }; }
+  const btnClose = document.getElementById('modalClose');
+  if(btnClose){ btnClose.onclick = closeSchematicModal; }
+
+  svg.addEventListener('wheel', e => {
+    e.preventDefault();
+    const rect = svg.getBoundingClientRect();
+    const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+    const fx = mx / rect.width, fy = my / rect.height;
+    const scale = e.deltaY > 0 ? 1.12 : 1/1.12;
+    const nw = Math.max(100, vb[2] * scale), nh = Math.max(100, vb[3] * scale);
+    const nx = vb[0] + (vb[2] - nw) * fx, ny = vb[1] + (vb[3] - nh) * fy;
+    setViewBox([nx, ny, nw, nh]);
+  }, { passive: false });
+
+  svg.addEventListener('mousedown', e => {
+    if(e.button !== 0) return;
+    isPanning = true; startX = e.clientX; startY = e.clientY; startVb = [...vb];
+    svg.style.cursor = 'grabbing';
+  });
+
+  window.addEventListener('mousemove', e => {
+    if(!isPanning) return;
+    const rect = svg.getBoundingClientRect();
+    const dx = (e.clientX - startX) / rect.width * vb[2];
+    const dy = (e.clientY - startY) / rect.height * vb[3];
+    setViewBox([startVb[0] - dx, startVb[1] - dy, vb[2], vb[3]]);
+  });
+
+  window.addEventListener('mouseup', () => { if(isPanning){ isPanning = false; svg.style.cursor = ''; } });
+
+  svg.addEventListener('touchstart', e => {
+    if(e.touches.length === 1){
+      isPanning = true; startX = e.touches[0].clientX; startY = e.touches[0].clientY; startVb = [...vb];
+    } else if(e.touches.length === 2){
+      isPanning = false;
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      lastDist = Math.sqrt(dx*dx + dy*dy);
+    }
+  }, { passive: true });
+
+  svg.addEventListener('touchmove', e => {
+    if(e.touches.length === 1 && isPanning){
+      const rect = svg.getBoundingClientRect();
+      const dx = (e.touches[0].clientX - startX) / rect.width * vb[2];
+      const dy = (e.touches[0].clientY - startY) / rect.height * vb[3];
+      setViewBox([startVb[0] - dx, startVb[1] - dy, vb[2], vb[3]]);
+    } else if(e.touches.length === 2){
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if(lastDist > 0){
+        const scale = lastDist / dist;
+        const rect = svg.getBoundingClientRect();
+        const mx = (e.touches[0].clientX + e.touches[1].clientX) / 2 - rect.left;
+        const my = (e.touches[0].clientY + e.touches[1].clientY) / 2 - rect.top;
+        const fx = mx / rect.width, fy = my / rect.height;
+        const nw = Math.max(100, vb[2] * scale), nh = Math.max(100, vb[3] * scale);
+        const nx = vb[0] + (vb[2] - nw) * fx, ny = vb[1] + (vb[3] - nh) * fy;
+        setViewBox([nx, ny, nw, nh]);
+      }
+      lastDist = dist;
+    }
+  }, { passive: true });
+
+  svg.addEventListener('touchend', () => { isPanning = false; lastDist = 0; }, { passive: true });
+}
+
+/* ============================================================
+   POP-OUT SCHEMATIC WINDOW
+   ============================================================ */
 function openPopOut(){
   if(popOutWindow && !popOutWindow.closed){ popOutWindow.focus(); return; }
   const svg = document.getElementById('schematicSvg');
   if(!svg) return;
-  const mainSvg = document.getElementById('schemContainer');
-  if(mainSvg) mainSvg.style.display = 'none';
   const w = Math.min(1400, window.innerWidth - 100);
   const h = Math.min(800, window.innerHeight - 100);
   popOutWindow = window.open('', 'schematic_popout',
     'width='+w+',height='+h+',scrollbars=no,resizable=yes');
-  if(!popOutWindow){ if(mainSvg) mainSvg.style.display = ''; return; }
+  if(!popOutWindow){
+    openSchematicModal();
+    return;
+  }
+  const mainSvg = document.getElementById('schemContainer');
+  if(mainSvg) mainSvg.style.display = 'none';
 
   const cssLinks = Array.from(document.querySelectorAll('link[rel=stylesheet]')).map(l => l.outerHTML).join('\n');
   const isLight = document.body.classList.contains('theme-light');
   const panZoomJs = `
 function enablePanZoom(){
   var svg=document.getElementById('schematicSvg'); if(!svg) return;
-  var vb=svg.getAttribute('viewBox').split(' ').map(Number);
-  var isPanning=false,sx,sy,svb,ld=0;
+  var origVb=svg.getAttribute('viewBox'); if(!svg.getAttribute('data-orig-viewbox')) svg.setAttribute('data-orig-viewbox', origVb);
+  var vb=origVb.split(' ').map(Number);
+  var isPanning=false,sx,sy,svb,lastDist=0;
   svg.style.cursor='grab';
   svg.addEventListener('wheel',function(e){
     e.preventDefault(); var r=svg.getBoundingClientRect();
@@ -69,6 +212,15 @@ function enablePanZoom(){
   svg.addEventListener('dblclick',function(){
     var o=svg.getAttribute('data-orig-viewbox'); if(o){ vb=o.split(' ').map(Number); svg.setAttribute('viewBox',o); }
   });
+  svg.addEventListener('touchstart', function(e){
+    if(e.touches.length===1){ isPanning=true; sx=e.touches[0].clientX; sy=e.touches[0].clientY; svb=vb.slice(); }
+    else if(e.touches.length===2){ isPanning=false; var dx=e.touches[0].clientX-e.touches[1].clientX, dy=e.touches[0].clientY-e.touches[1].clientY; lastDist=Math.sqrt(dx*dx+dy*dy); }
+  },{passive:true});
+  svg.addEventListener('touchmove', function(e){
+    if(e.touches.length===1 && isPanning){ var r=svg.getBoundingClientRect(); var dx=(e.touches[0].clientX-sx)/r.width*vb[2], dy=(e.touches[0].clientY-sy)/r.height*vb[3]; vb=[svb[0]-dx,svb[1]-dy,vb[2],vb[3]]; svg.setAttribute('viewBox',vb.join(' ')); }
+    else if(e.touches.length===2){ var dx=e.touches[0].clientX-e.touches[1].clientX, dy=e.touches[0].clientY-e.touches[1].clientY, dist=Math.sqrt(dx*dx+dy*dy); if(lastDist>0){ var scale=lastDist/dist, r=svg.getBoundingClientRect(), fx=((e.touches[0].clientX+e.touches[1].clientX)/2-r.left)/r.width, fy=((e.touches[0].clientY+e.touches[1].clientY)/2-r.top)/r.height, nw=Math.max(100,vb[2]*scale), nh=Math.max(100,vb[3]*scale), nx=vb[0]+(vb[2]-nw)*fx, ny=vb[1]+(vb[3]-nh)*fy; vb=[nx,ny,nw,nh]; svg.setAttribute('viewBox',vb.join(' ')); } lastDist=dist; }
+  },{passive:true});
+  svg.addEventListener('touchend', function(){ isPanning=false; lastDist=0; },{passive:true});
 }
 enablePanZoom();`;
   popOutWindow.document.write('<!DOCTYPE html><html><head><title>AHU-1 Schematic</title>'+
@@ -296,7 +448,7 @@ document.getElementById('sooHeader').addEventListener('click', ()=>{
 document.getElementById('themeToggleBtn').addEventListener('click', ()=>{
   document.body.classList.toggle('theme-light');
   const light = document.body.classList.contains('theme-light');
-  document.getElementById('themeToggleBtn').innerHTML = light? '\u263d' : '\u2600';
+  document.getElementById('themeToggleBtn').textContent = light? 'DARK MODE' : 'LIGHT MODE';
   syncBasTheme();
   buildSchematic();
   renderVavBoxGrid();
@@ -312,15 +464,47 @@ document.getElementById('speedGroup').querySelectorAll('button').forEach(btn=>{
     tickHandle = setInterval(tick, 1000/simSpeed);
   });
 });
-document.getElementById('enableToggle').addEventListener('click', ()=>{ setEnabledUI(!sim.enabled); });
-document.getElementById('econToggle').addEventListener('click', ()=>{ setEconomizerUI(!sim.economizerEnabled); });
-document.getElementById('dehumidToggle').addEventListener('click', ()=>{ setDehumidUI(!sim.dehumidEnabled); });
-document.getElementById('humidToggle').addEventListener('click', ()=>{ setHumidUI(!sim.humidEnabled); });
-document.getElementById('btnResetSafeties').addEventListener('click', ()=>{
-  latched.freezestat=false; latched.highStatic=false; latched.aquastat=false; latched.hotFreezestat=false;
-  freezestatRecovering=true;
-  manualSafety.fireAlarm=false; manualSafety.smokeDamperFail=false; manualSafety.doorOpen=false;
-});
+const topEnableBtn = document.getElementById('topEnableBtn');
+if(topEnableBtn){
+  topEnableBtn.addEventListener('click', ()=>{
+    const tripped = latched.freezestat||latched.highStatic||latched.aquastat||latched.hotFreezestat||manualSafety.fireAlarm||manualSafety.smokeDamperFail||manualSafety.doorOpen;
+    if(tripped){
+      latched.freezestat=false; latched.highStatic=false; latched.aquastat=false; latched.hotFreezestat=false;
+      freezestatRecovering=true;
+      manualSafety.fireAlarm=false; manualSafety.smokeDamperFail=false; manualSafety.doorOpen=false;
+    }
+    setEnabledUI(!sim.enabled);
+  });
+}
+const sideEconBtn = document.getElementById('sideEconBtn');
+if(sideEconBtn){
+  sideEconBtn.addEventListener('click', ()=>{
+    const avail = config.includeOa && config.airSystem === 'return';
+    if(avail) setEconomizerUI(!sim.economizerEnabled);
+  });
+}
+const sideDehumidBtn = document.getElementById('sideDehumidBtn');
+if(sideDehumidBtn){
+  sideDehumidBtn.addEventListener('click', ()=>{
+    const avail = config.coolingCoils !== 'none';
+    if(avail) setDehumidUI(!sim.dehumidEnabled);
+  });
+}
+const sideHumidBtn = document.getElementById('sideHumidBtn');
+if(sideHumidBtn){
+  sideHumidBtn.addEventListener('click', ()=>{
+    const avail = !!config.steamHumid;
+    if(avail) setHumidUI(!sim.humidEnabled);
+  });
+}
+const btnResetSafeties = document.getElementById('btnResetSafeties');
+if(btnResetSafeties){
+  btnResetSafeties.addEventListener('click', ()=>{
+    latched.freezestat=false; latched.highStatic=false; latched.aquastat=false; latched.hotFreezestat=false;
+    freezestatRecovering=true;
+    manualSafety.fireAlarm=false; manualSafety.smokeDamperFail=false; manualSafety.doorOpen=false;
+  });
+}
 
 document.getElementById('btnStartScenario').addEventListener('click', ()=>{ const id = document.getElementById('scenarioSelect').value; if(!id){ alert('Choose a scenario from the list first.'); return; } applyScenario(id); });
 document.getElementById('btnEndScenario').addEventListener('click', endScenario);
